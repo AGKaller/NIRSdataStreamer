@@ -11,9 +11,9 @@ clear
 
 % TODO: 
 % ordnerstruktur mit pid, studydate-studytime
-% double check order of columns/variabels
-% trigger - testing
-% GUI bolus trigger - create
+% GUI bolus trigger - improve responsiveness, use poolfeval to run in
+%       separate process. Use _exported-GUI!
+
 %% initialize paths
 rootPth = 'C:\Users\nradu\Documents\MATLAB';
 addpath(fullfile(rootPth,'DataStreamer','util'));
@@ -24,6 +24,7 @@ addpath(fullfile(rootPth,'TriggerCtrlGUI'));
 % paths = Paths_init('Lin'); % only necessary for offline testing
 
 nspConfigPth = 'C:\Users\nradu\Documents\NIRx\Configurations';
+nspDataPth = 'C:\Users\nradu\Documents\NIRx\Data';
 
 %% SET PARAMETERS
 
