@@ -16,7 +16,7 @@ clear
 % GUI bolus trigger - create
 %% initialize paths
 rootPth = 'C:\Users\nradu\Documents\MATLAB';
-addpath(fullfile(rootPth,'CerebOx_2021-06-11.0','util'));
+addpath(fullfile(rootPth,'DataStreamer','util'));
 addpath(genpath(fullfile(rootPth,'liblsl-Matlab')));
 addpath(fullfile(rootPth,'jsonlab-2.0'));
 addpath(fullfile(rootPth,'TriggerCtrlGUI'));
