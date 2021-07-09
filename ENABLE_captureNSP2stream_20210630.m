@@ -15,7 +15,7 @@ clear
 % trigger - testing
 % GUI bolus trigger - create
 %% initialize paths
-rootPth = 'C:\Users\nradu\Documents\MATLAB';
+rootPth = fileparts(fileparts(mfilename('fullpath'))); % 'C:\Users\nradu\Documents\MATLAB';
 addpath(fullfile(rootPth,'DataStreamer','util'));
 addpath(genpath(fullfile(rootPth,'liblsl-Matlab')));
 addpath(fullfile(rootPth,'jsonlab-2.0'));
