@@ -9,6 +9,7 @@
 %       and final results dynamic display.
 clear
 
+
 % TODO: 
 % ordnerstruktur mit pid, studydate-studytime
 % double check order of columns/variabels
