@@ -15,6 +15,7 @@ clear
 % trigger - testing
 % GUI bolus trigger - create
 
+
 %% initialize paths
 rootPth = 'C:\Users\nradu\Documents\MATLAB';
 addpath(fullfile(rootPth,'DataStreamer','util'));
