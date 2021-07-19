@@ -14,6 +14,7 @@ clear
 % ordnerstruktur mit pid, studydate-studytime
 % GUI bolus trigger - improve responsiveness, use poolfeval to run in
 %       separate process. Use _exported-GUI!
+% Laengerer, definierter Vorlauf fue perfusion-Messungen. Retro-Prospektiv?
 
 %% initialize paths
 rootPth = fileparts(fileparts(mfilename('fullpath'))); % 'C:\Users\nradu\Documents\MATLAB';
