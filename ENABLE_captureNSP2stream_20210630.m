@@ -12,8 +12,8 @@ clear
 
 % TODO: 
 % ordnerstruktur mit pid, studydate-studytime
-% GUI bolus trigger - improve responsiveness, use poolfeval to run in
-%       separate process. Use _exported-GUI!
+% GUI bolus trigger - improve responsiveness, use parfeval to run in
+%       separate process. Use _exported-GUI! Check output/setting of bolusTrgNums
 % Laengerer, definierter Vorlauf fue perfusion-Messungen. Retro-Prospektiv?
 
 %% initialize paths
@@ -28,16 +28,20 @@ addpath(fullfile(rootPth,'TriggerCtrlGUI'));
 nspConfigPth = 'C:\Users\nradu\Documents\NIRx\Configurations';
 nspDataPth = 'C:\Users\nradu\Documents\NIRx\Data';
 
+outPath = '\\AFS\fbi.ukl.uni-freiburg.de\projects\CascadeNIRS\test\202101_NIRSport2_test\StreamOutput';
+outPath_fallback = fullfile(userpath,'ENABLE_data_fallbackPth',datestr(datetime,'yyyy-mm-dd'));
+
 %% SET PARAMETERS
+
+tBoxCOM = 'COM4';
+
+cerebOxCfg = 'Sheep20210602cerebOx2d.ncfg';
+shortLongCfg = 'Sheep20210602min18max40v2d.ncfg';
 
 bolusTrgNum = [49 50 51];
 bolusChunkSec = 100;
 StO2rate = 1;
 
-cerebOxCfg = 'Sheep20210602cerebOx2d.ncfg';
-shortLongCfg = 'Sheep20210602min18max40v2d.ncfg';
-outPath = '\\AFS\fbi.ukl.uni-freiburg.de\projects\CascadeNIRS\test\202101_NIRSport2_test\StreamOutput';
-outPath_fallback = fullfile(userpath,'ENABLE_data_fallbackPth',datestr(datetime,'yyyy-mm-dd'));
 % ### !!! for TESTing !!! ####
 % outPath = outPath_fallback;
 
@@ -67,7 +71,8 @@ if ~exist(outPath,'dir'), mkdir(outPath); end
 [sys_cnfg] = lsl_init(sys_cnfg,'output');
 % Start Bolus & Trigger control GUI: (not required)
 close(findall(0,'Type','figure','-and','Name','BolusTriggerCtrl'));
-TCH = TrigCtrlGUI(sys_cnfg.lsl.outlet_trg,'COM3');
+p = gcp();
+TCH = parfeval(p,@()TrigCtrlGUI_exported(sys_cnfg.lsl.outlet_trg,tBoxCOM),1);
 TCH.bolusTrgNums = bolusTrgNum;
 
 %% initialize physical constants
