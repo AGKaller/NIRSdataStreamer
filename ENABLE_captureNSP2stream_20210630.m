@@ -65,6 +65,12 @@ sys_cnfg.StO2rate = StO2rate; % Monitoring every second;
 % see more details in system_init function
 
 if ~exist(outPath,'dir'), mkdir(outPath); end
+loFiles = {sprintf('chnPos_%s',regexprep(cerebOxCfg,'\.ncfg$','.csv'));
+           sprintf('optPos_%s',regexprep(cerebOxCfg,'\.ncfg$','.csv'))};
+for i = 1:numel(loFiles)
+    copyfile(fullfile(rootPth, 'DataStreamer', 'optodeLayouts', loFiles{i}), ...
+             outPath);
+end
 
 %% initialize LSL & TriggerCtrlGUI
 % [sys_cnfg] = lsl_init(sys_cnfg,'input');
@@ -144,11 +150,7 @@ while true % toc < Tstart+Ttarget
         [currentChunk, currentTStamp] = sys_cnfg.lsl.inlet.pull_chunk();
         if isempty(currentChunk)
             if emptyChunkCnt==600 % .01*100 = 1s without new chunk
-                try fclose(fidCOx); end
-                try fclose(fidRaw); end
-%                 try fclose(fidCOx_bol); end
-%                 try fclose(fidRaw_bol); end
-                fprintf('%s\t files closed.\n',datestr(now,'yyyy-mm-dd HH:MM:SS'));
+                fprintf('%s\t waiting for new stream.\n',datestr(now,'yyyy-mm-dd HH:MM:SS'));
                 startNewFile = true;
             end
             emptyChunkCnt = emptyChunkCnt + 1;
