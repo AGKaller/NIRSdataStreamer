@@ -25,7 +25,7 @@ P = setPath();
 nspConfigPth = P.nspConfigPth;
 outPath = P.outPath;
 outPath_fallback = P.outPath_fallback;
-
+optLayoutPath = P.optodeLayouts;
 
 %% SET PARAMETERS
 
@@ -33,6 +33,7 @@ tBoxCOM = 'COM4';
 
 cerebOxCfg = 'Sheep20210602cerebOx2d.ncfg';
 shortLongCfg = 'Sheep20210602min18max40v2d.ncfg';
+setupID = 'Sheep20210602'; 
 
 bolusPreTrgNum = 48;
 bolusPreLength = 30; % seconds
@@ -63,10 +64,16 @@ sys_cnfg.StO2rate = StO2rate; % Monitoring every second;
 % see more details in system_init function
 
 if ~exist(outPath,'dir'), mkdir(outPath); end
-loFiles = {sprintf('chnPos_%s',regexprep(cerebOxCfg,'\.ncfg$','.csv'));
-           sprintf('optPos_%s',regexprep(cerebOxCfg,'\.ncfg$','.csv'))};
-for i = 1:numel(loFiles)
-    copyfile(fullfile(rootPth, 'optodeLayouts', loFiles{i}), ...
+% loFiles = {sprintf('chnPos_%s',regexprep(cerebOxCfg,'\.ncfg$','.csv'));
+%            sprintf('optPos_%s',regexprep(cerebOxCfg,'\.ncfg$','.csv'))};
+loFiles = dir(optLayoutPath);
+loFileNames = {loFiles.name};
+ilof = find(~cellfun(@isempty,regexp(loFileNames,['^' setupID],'once')));
+assert(numel(ilof)==2, ...
+    'Unexpected number of optodeLayout-files found for setupID ''%s'' (%d), need 2!', ...
+    setupID, numel(ilof));
+for i = 1:numel(ilof)
+    copyfile(fullfile(optLayoutPath, loFileNames{ilof(i)}), ...
              outPath);
 end
 
