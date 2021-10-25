@@ -68,7 +68,8 @@ if ~exist(outPath,'dir'), mkdir(outPath); end
 %            sprintf('optPos_%s',regexprep(cerebOxCfg,'\.ncfg$','.csv'))};
 loFiles = dir(optLayoutPath);
 loFileNames = {loFiles.name};
-ilof = find(~cellfun(@isempty,regexp(loFileNames,['^' setupID],'once')));
+lofPattern = sprintf('^(chn|opt)Pos_%s.*',setupID);
+ilof = find(~cellfun(@isempty,regexp(loFileNames,lofPattern,'once')));
 assert(numel(ilof)==2, ...
     'Unexpected number of optodeLayout-files found for setupID ''%s'' (%d), need 2!', ...
     setupID, numel(ilof));
