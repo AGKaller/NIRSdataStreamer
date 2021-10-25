@@ -9,7 +9,7 @@ switch getenv('COMPUTERNAME')
         rootPth = fileparts(fileparts(fileparts(mfilename('fullpath')))); % 'C:\Users\nradu\Documents\MATLAB';
         addpath(genpath(fullfile(rootPth,'liblsl-Matlab')));
         addpath(fullfile(rootPth,'jsonlab-2.0'));
-        addpath(fullfile(rootPth,'TriggerCtrlGUI'));
+        addpath(fullfile(rootPth,'TriggerCtrlGUI','src'));
         p.nspConfigPth = fullfile(fileparts(userpath),'NIRx','Configurations');
         p.optodeLayouts = fullfile(dsPth, 'optodeLayouts');
         
@@ -18,7 +18,7 @@ switch getenv('COMPUTERNAME')
         rootPth = fileparts(fileparts(fileparts(mfilename('fullpath')))); % 'C:\Users\nradu\Documents\MATLAB';
         addpath(genpath(fullfile(rootPth,'liblsl-Matlab')));
         addpath(fullfile(rootPth,'jsonlab-2.0'));
-        addpath(fullfile(rootPth,'TriggerCtrlGUI'));
+        addpath(fullfile(rootPth,'TriggerCtrlGUI','src'));
         p.nspConfigPth = fullfile(afsNSP2path,'Configurations');
         p.optodeLayouts = fullfile(dsPth, 'optodeLayouts');
         
