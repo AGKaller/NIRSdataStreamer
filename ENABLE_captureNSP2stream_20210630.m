@@ -20,17 +20,12 @@ clear
 %% initialize paths
 rootPth = fileparts(fileparts(mfilename('fullpath'))); % 'C:\Users\nradu\Documents\MATLAB';
 addpath(fullfile(rootPth,'DataStreamer','util'));
-addpath(genpath(fullfile(rootPth,'liblsl-Matlab')));
-addpath(fullfile(rootPth,'jsonlab-2.0'));
-addpath(fullfile(rootPth,'TriggerCtrlGUI'));
+P = setPath();
 
-% paths = Paths_init('Lin'); % only necessary for offline testing
+nspConfigPth = P.nspConfigPth;
+outPath = P.outPath;
+outPath_fallback = P.outPath_fallback;
 
-nspConfigPth = 'C:\Users\nradu\Documents\NIRx\Configurations';
-nspDataPth = 'C:\Users\nradu\Documents\NIRx\Data';
-
-outPath = '\\AFS\fbi.ukl.uni-freiburg.de\projects\CascadeNIRS\test\202101_NIRSport2_test\StreamOutput';
-outPath_fallback = fullfile(userpath,'ENABLE_data_fallbackPth',datestr(datetime,'yyyy-mm-dd'));
 
 %% SET PARAMETERS
 
@@ -39,6 +34,8 @@ tBoxCOM = 'COM4';
 cerebOxCfg = 'Sheep20210602cerebOx2d.ncfg';
 shortLongCfg = 'Sheep20210602min18max40v2d.ncfg';
 
+bolusPreTrgNum = 48;
+bolusPreLength = 30; % seconds
 bolusTrgNum = [49 50 51];
 bolusChunkSec = 100;
 StO2rate = 1;
