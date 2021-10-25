@@ -18,8 +18,8 @@ clear
 % sekunden, trigger 48
 
 %% initialize paths
-rootPth = fileparts(fileparts(mfilename('fullpath'))); % 'C:\Users\nradu\Documents\MATLAB';
-addpath(fullfile(rootPth,'DataStreamer','util'));
+rootPth = fileparts(mfilename('fullpath')); % 'C:\Users\nradu\Documents\MATLAB';
+addpath(fullfile(rootPth,'util'));
 P = setPath();
 
 nspConfigPth = P.nspConfigPth;
@@ -66,7 +66,7 @@ if ~exist(outPath,'dir'), mkdir(outPath); end
 loFiles = {sprintf('chnPos_%s',regexprep(cerebOxCfg,'\.ncfg$','.csv'));
            sprintf('optPos_%s',regexprep(cerebOxCfg,'\.ncfg$','.csv'))};
 for i = 1:numel(loFiles)
-    copyfile(fullfile(rootPth, 'DataStreamer', 'optodeLayouts', loFiles{i}), ...
+    copyfile(fullfile(rootPth, 'optodeLayouts', loFiles{i}), ...
              outPath);
 end
 

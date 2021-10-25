@@ -12,6 +12,7 @@ switch getenv('COMPUTERNAME')
         addpath(fullfile(rootPth,'TriggerCtrlGUI'));
         p.nspConfigPth = fullfile(fileparts(userpath),'NIRx','Configurations');
         p.optodeLayouts = fullfile(dsPth, 'optodeLayouts');
+        
     case 'CHIMERA'
         dsPth = fileparts(fileparts(mfilename('fullpath'))); % 'C:\Users\nradu\Documents\MATLAB';
         rootPth = fileparts(fileparts(fileparts(mfilename('fullpath')))); % 'C:\Users\nradu\Documents\MATLAB';
@@ -20,8 +21,11 @@ switch getenv('COMPUTERNAME')
         addpath(fullfile(rootPth,'TriggerCtrlGUI'));
         p.nspConfigPth = fullfile(afsNSP2path,'Configurations');
         p.optodeLayouts = fullfile(dsPth, 'optodeLayouts');
+        
+        
     otherwise, error('Unknown COMPUTERNAME, can''t set paths.');
 end
+
 
 p.outPath = fullfile(afsNSP2path,'StreamOutput');
 p.outPath_fallback = fullfile(userpath,'ENABLE_data_fallbackPth',datestr(datetime,'yyyy-mm-dd'));
