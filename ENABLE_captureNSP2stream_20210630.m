@@ -14,7 +14,8 @@ clear
 % ordnerstruktur mit pid, studydate-studytime
 % GUI bolus trigger - improve responsiveness, use parfeval to run in
 %       separate process. Use _exported-GUI! Check output/setting of bolusTrgNums
-% Laengerer, definierter Vorlauf fue perfusion-Messungen. Retro-Prospektiv?
+% Laengerer, definierter Vorlauf fue perfusion-Messungen. Retrospektiv, 30
+% sekunden, trigger 48
 
 %% initialize paths
 rootPth = fileparts(fileparts(mfilename('fullpath'))); % 'C:\Users\nradu\Documents\MATLAB';
@@ -45,8 +46,8 @@ StO2rate = 1;
 % ### !!! for TESTing !!! ####
 % outPath = outPath_fallback;
 
-% ------- initialize plots (only for testing): ---------
-testing = 1;
+% ------- initialize plots (only for testing, ONLY Sheep1): ---------
+testing = 0;
 if testing
     fh = figure; ah = axes('Parent',fh);
     hold(ah,'on');
