@@ -10,6 +10,11 @@
 clear
 
 
+% ========== CAVE CAVE ==========
+%:: CEREBOX STREAMING DISABLED ::
+% ===============================
+
+
 % TODO: 
 % ordnerstruktur mit pid, studydate-studytime
 % GUI bolus trigger - improve responsiveness, use parfeval to run in
@@ -29,10 +34,10 @@ optLayoutPath = P.optodeLayouts;
 
 %% SET PARAMETERS
 
-tBoxCOM = 'COM4';
+tBoxCOM = 'COM6';
 
-cerebOxCfg = 'Sheep20210602cerebOx2d.ncfg';
-shortLongCfg = 'Sheep20210602min18max40v2d.ncfg';
+shortLongCfg = 'Sheep2a_211029.ncfg';
+cerebOxCfg = shortLongCfg;%'Sheep2a_211029.ncfg';
 setupID = 'Sheep20210602'; 
 
 bolusPreTrgNum = 48;
@@ -83,9 +88,11 @@ end
 [sys_cnfg] = lsl_init(sys_cnfg,'output');
 % Start Bolus & Trigger control GUI: (not required)
 close(findall(0,'Type','figure','-and','Name','BolusTriggerCtrl'));
-p = gcp();
-TCH = parfeval(p,@()TrigCtrlGUI_exported(sys_cnfg.lsl.outlet_trg,tBoxCOM),1);
-TCH.bolusTrgNums = bolusTrgNum;
+% p = gcp('nocreate');
+% % if isempty(p), p=parpool('threads'); end
+% if isempty(p), p=parpool('local',1); end
+% TCH = parfeval(p,@TrigCtrlGUI_exported,1,sys_cnfg.lsl.outlet_trg,tBoxCOM);
+% TCH.bolusTrgNums = bolusTrgNum;
 
 %% initialize physical constants
 % For adult head
@@ -183,7 +190,7 @@ while true % toc < Tstart+Ttarget
         baseOutFName = datestr(datetime,'yyyymmdd-HHMMSS');
         
         rawFmt = ['\r\n%.3f,%d,%d' repmat(',%.8f',1,size(currentChunk,1)-1)];
-        if size(currentChunk,1)-1==sys_cnfg.NChan*4 % cerebOx setup -> long channels only
+        if 0 % size(currentChunk,1)-1==sys_cnfg.NChan*4 % cerebOx setup -> long channels only
             nChn = sys_cnfg.NChan;
             rawFile = fullfile(outPath,sprintf('%s_%03d_raw.csv',baseOutFName,nChn));
             fidRaw = fopen_fallback(rawFile,...

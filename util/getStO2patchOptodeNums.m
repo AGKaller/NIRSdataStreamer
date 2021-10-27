@@ -7,13 +7,13 @@ import StO2patchDefs.*
 if startsWith(cfgname,{'Sheep20210602'})
     [Optodes, Types] = Sheep20210602();
     
-elseif startsWith(ncfgName,{'Sheep20211029a'})
+elseif startsWith(cfgname,{'Sheep2a'})
     [o{1}, t{1}] = Sheep20211029_base();
     [o{2}, t{2}] = Sheep20211029_rostral();
     Optodes = vertcat(o{:});
     Types = vertcat(t{:});
 
-elseif startsWith(ncfgName,{'Sheep20211029b'})
+elseif startsWith(cfgname,{'Sheep2b'})
     [o{1}, t{1}] = Sheep20211029_base();
     [o{2}, t{2}] = Sheep20211029_caudal();
     Optodes = vertcat(o{:});
