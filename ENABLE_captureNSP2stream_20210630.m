@@ -36,7 +36,7 @@ optLayoutPath = P.optodeLayouts;
 
 tBoxCOM = 'COM6';
 
-shortLongCfg = 'Sheep2a_211029.ncfg';
+shortLongCfg = 'Sheep2b_211029.ncfg';
 cerebOxCfg = shortLongCfg;%'Sheep2a_211029.ncfg';
 setupID = 'Sheep20210602'; 
 
