@@ -70,10 +70,11 @@ switch type
 %         sys_cnfg.lsl.outlet = lsl_outlet(sys_cnfg.lsl.OutSInfo);
         
         % trigger .........................................................
-        if ~silent, disp(['Creating new stream for trigger: ' sys_cnfg.lsl.OutTName]); end
-        sys_cnfg.lsl.OutTInfo = lsl_streaminfo(sys_cnfg.lsl.lslib, sys_cnfg.lsl.OutTName, sys_cnfg.lsl.OutTLabel, 1, 0, 'cf_int8', 'sdfwerr32432');
-        if ~silent, disp(['Opening ' sys_cnfg.lsl.OutTName ' stream outlet...']); end
-        sys_cnfg.lsl.outlet_trg = lsl_outlet(sys_cnfg.lsl.OutTInfo);
+        % obsolete, handled by TrigCtrlGUI
+%         if ~silent, disp(['Creating new stream for trigger: ' sys_cnfg.lsl.OutTName]); end
+%         sys_cnfg.lsl.OutTInfo = lsl_streaminfo(sys_cnfg.lsl.lslib, sys_cnfg.lsl.OutTName, sys_cnfg.lsl.OutTLabel, 1, 0, 'cf_int8', 'sdfwerr32432');
+%         if ~silent, disp(['Opening ' sys_cnfg.lsl.OutTName ' stream outlet...']); end
+%         sys_cnfg.lsl.outlet_trg = lsl_outlet(sys_cnfg.lsl.OutTInfo);
 end
 
 end
