@@ -22,8 +22,8 @@ clear
 %% SET PARAMETERS
 
 PID = 'TEST'; % 'ENABLE_002'; % 
-SID = sprintf('%s-093000',datestr(now,'yyyymmdd'));
-shortLongCfg = 'Sheep2a_211029.ncfg'; % 'Sheep2a_211029_sine.ncfg'; % 'Sheep2a_211029_SCD.ncfg'; % 
+SID = sprintf('%s-093200',datestr(now,'yyyymmdd'));
+shortLongCfg = 'Sheep2a_211029_SCD.ncfg'; % 'Sheep2a_211029.ncfg'; % 'Sheep2a_211029_sine.ncfg'; % 
 % shortLongCfg = 'Sheep2b_211029_sine.ncfg'; % 'Sheep2b_211029_SCD.ncfg'; % 'Sheep2b_211029.ncfg'; % 
 cerebOxCfg = shortLongCfg; %'Sheep2a_211029.ncfg';
 
@@ -74,15 +74,15 @@ if ~exist(outPath,'dir'), mkdir(outPath); end
 
 
 % provide layout files .................
-setupID = regexprep(shortLongCfg,'(_sine|_rect)?.ncfg$','');
+layoutBaseNam = regexprep(shortLongCfg,'(_sine|_rect)?.ncfg$','');
 
 loFiles = dir(optLayoutPath);
 loFileNames = {loFiles.name};
-lofPattern = sprintf('^(chn|opt)Pos_%s.*',setupID);
+lofPattern = sprintf('^(chn|opt)Pos_%s.csv$',layoutBaseNam);
 ilof = find(~cellfun(@isempty,regexp(loFileNames,lofPattern,'once')));
 assert(numel(ilof)==2, ...
     'Unexpected number of optodeLayout-files found for setupID ''%s'' (%d), need 2!', ...
-    setupID, numel(ilof));
+    layoutBaseNam, numel(ilof));
 for i = 1:numel(ilof)
     copyfile(fullfile(optLayoutPath, loFileNames{ilof(i)}), ...
              outPath);
@@ -224,7 +224,7 @@ while true % toc < Tstart+Ttarget
         end
         fclose(fidRaw);
         preBolusBuffLen = ceil(bolusPreLength*fs)*2;
-        preBolusBuff = zeros(size(currentChunk,1)+2,preBolusBuffLen);
+        preBolusBuff = nan(size(currentChunk,1)+2,preBolusBuffLen);
     end % if startNewFile
     
     currentDATA = [t0+currentTStamp; trgs; currentChunk];
@@ -260,6 +260,8 @@ while true % toc < Tstart+Ttarget
 %             iBuff1 = find(preBolusBuff(2,:)==bolusTrgNum(1),1,'last');
             iBuff0 = max(1, iBuff1 - preBolusBuffLen/2 + 1);
             preBolChnk = preBolusBuff(:,iBuff0:end);
+            iBuff0 = find(~isnan(preBolChnk(1,:)),1,'first');
+            preBolChnk = preBolChnk(:,iBuff0:end);
             preBolChnk(2,1) = bolusPreTrgNum;
             fprintf(fidRaw_bol,rawFmt,preBolChnk);
             fclose(fidRaw_bol);
