@@ -166,12 +166,14 @@ sys_cnfg.lsl.lslib = lsl_loadlib();
 sys_cnfg.lsl.InSLabel = {'fNIRS'};
 sys_cnfg.lsl.OutSLabel = {'StO2'};
 sys_cnfg.lsl.InTLabel = 'Trigger_in';
-sys_cnfg.lsl.OutTLabel = 'Trigger_out';
+% obsolete, handled by TrigCtrlGUI:
+% sys_cnfg.lsl.OutTLabel = 'Trigger_out';
 % default stream name
 sys_cnfg.lsl.InSName = 'Aurora'; % 'NSP2_Stream';
 sys_cnfg.lsl.OutSName = 'CerebOx_Stream';
 sys_cnfg.lsl.InTName = 'NIRStarTriggers';
-sys_cnfg.lsl.OutTName = 'Trigger';
+% obsolete, handled by TrigCtrlGUI:
+% sys_cnfg.lsl.OutTName = 'Trigger';
 
 end
 
