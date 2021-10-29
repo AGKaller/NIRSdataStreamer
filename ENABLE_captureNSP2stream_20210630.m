@@ -21,13 +21,23 @@ clear
 
 %% SET PARAMETERS
 
-PID = 'TEST'; % 'ENABLE_002'; % 
-SID = sprintf('%s-093200',datestr(now,'yyyymmdd'));
-shortLongCfg = 'Sheep2a_211029_SCD.ncfg'; % 'Sheep2a_211029.ncfg'; % 'Sheep2a_211029_sine.ncfg'; % 
+PID = 'ENABLE_002'; % 'TEST'; % 
+SID = sprintf('%s-093000',datestr(now,'yyyymmdd'));
+% shortLongCfg = 'Sheep2a_211029.ncfg'; % 
+% shortLongCfg = 'Sheep2a_211029_SCD.ncfg'; % 
+shortLongCfg = 'Sheep2a_211029_SCD_long.ncfg'; % 
+% shortLongCfg = 'Sheep2a_211029_long.ncfg'; % 
+
+% % shortLongCfg = 'Sheep2a_211029_long_sine.ncfg'; % 
+% % shortLongCfg = 'Sheep2a_211029_SCD_long_sine.ncfg'; % 
+% shortLongCfg = 'Sheep2a_211029_SCD.ncfg'; % 'Sheep2a_211029.ncfg'; % 'Sheep2a_211029_sine.ncfg'; % 
+
+% vers b:
 % shortLongCfg = 'Sheep2b_211029_sine.ncfg'; % 'Sheep2b_211029_SCD.ncfg'; % 'Sheep2b_211029.ncfg'; % 
 cerebOxCfg = shortLongCfg; %'Sheep2a_211029.ncfg';
 
 
+% constants
 bolusPreTrgNum = 48;
 bolusPreLength = 30; % seconds
 bolusTrgNum = [49 50 51];
@@ -74,7 +84,7 @@ if ~exist(outPath,'dir'), mkdir(outPath); end
 
 
 % provide layout files .................
-layoutBaseNam = regexprep(shortLongCfg,'(_sine|_rect)?.ncfg$','');
+layoutBaseNam = regexprep(shortLongCfg,'(_long)?(_sine|_rect)?.ncfg$','');
 
 loFiles = dir(optLayoutPath);
 loFileNames = {loFiles.name};
