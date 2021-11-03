@@ -16,6 +16,15 @@ clear
 
 
 % TODO: 
+% Check right configuration (via nchn or via last measurement config in
+% NIRx data folder?) and bring up question dialog if to proceed or to
+% change config.
+%
+% Investigate: When measurements are long and raw-files grow large, network
+% traffic outgrows and things (this script) get laggy. Solution: write
+% locally and copy when measurement/bolus stops. (can this be deployed to
+% avoid blocking of Matlab?)
+%
 % Bolus pre buffer writing: adapt size (and end time?) according to
 % position of Trigger in current chunk.
 
