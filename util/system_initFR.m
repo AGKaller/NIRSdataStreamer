@@ -156,6 +156,7 @@ for i=1:sys_cnfg.NPatch
             long = 32; % long edge length
             short = 16; % short edge length
             sys_cnfg.patch(i).rho = [sqrt((long+delta)^2+short^2) sqrt((long-delta)^2+short^2); long+delta long-delta]; % sqrt((29.9+-0.3)^2+18^2); 29.9+-0.3, in the layout of cables are paralle to long edges.
+        otherwise, error('Unrecognized patch type!');
     end
 end
 
