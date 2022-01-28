@@ -65,43 +65,8 @@ sys_cnfg.srate = floor(sys_cnfg.srate);
 chnMskNum = double(vertcat(sys_cnfg.chnMask{:}))==49; % channel Mask as logicals
 srcNChn = sum(chnMskNum,2); % number of channels each source contributes to.
 % optode topo-layout & resulting patches:
-% switch ncfgName
-%     case {'Sheep20210602all', 'Sheep20210602'}
-if startsWith(ncfgName,{'Sheep20210602'})
-%     chnHeadr = regexp('0-0, 0-4, 0-5, 1-1, 1-4, 1-5, 2-2, 2-4, 2-6, 2-7, 3-3, 3-5, 3-6, 3-7, 4-0, 4-1, 4-2, 4-4, 4-8, 4-9, 5-0, 5-1, 5-3, 5-5, 5-8, 5-9, 6-2, 6-3, 6-6, 6-8, 6-10, 6-11, 7-2, 7-3, 7-7, 7-9, 7-10, 7-11, 8-4, 8-5, 8-6, 8-8, 9-4, 9-5, 9-7, 9-9, 10-6, 10-7, 10-10, 11-6, 11-7, 11-11', ...
-%         ', ','split');
-    Optodes = [
-            5  1  2  6;
-            1  5  6  2; % *
-            3  7  8  4;
-            7  3  4  8;
-            5  9 10  6;
-            9  5  6 10;
-           11  7  8 12;
-            7 11 12  8;
-            3  3  5  5; % *
-            4  4  6  6;
-            7  7  9  9; % * 
-            8  8 10 10; % *
-            ];
-        sys_cnfg.chnGrdFile = fullfile(rootDir, ...
-            'cerebOx_topolayouts','Sheep20210602.csv'); % currently not used
-        Types = repmat({
-            'Rectangular36-18' 
-            }, size(Optodes,1),1);
-        
-%     case 'template-copyMe!'
-%         Optodes = [
-%             1 1 2 2;
-%             ];
-%         Types = {
-%             'Rectangular35-30' 
-%             };
-        
-%     otherwise,
-else
-    error('Unknown configuration name!');
-end
+[Optodes, Types] = getStO2layoutPatches(ncfgName);
+
 % Optodes = [
 %     1 1 2 2;
 %     3 3 4 4
@@ -172,26 +137,7 @@ sys_cnfg.patchOptodes = Optodes;
 
 %% Patch selection and channel separations
 for i=1:sys_cnfg.NPatch
-    switch sys_cnfg.patch(i).type
-        
-        case 'Linear20-16'
-            sys_cnfg.patch(i).rho = [36 20]; %mm long / short separation
-            
-        case 'Rectangular35-30'
-            sys_cnfg.patch(i).rho = [35 30];
-            
-        case 'Linear20-20'
-            sys_cnfg.patch(i).rho = [40 20];
-            
-        case 'Rectangular36-18'
-            sys_cnfg.patch(i).rho = [40.25 36];
-            
-        case 'Rectangular_precise'
-            delta = 0.2; % unit mm , half of the dies distance
-            long = 32; % long edge length
-            short = 16; % short edge length
-            sys_cnfg.patch(i).rho = [sqrt((long+delta)^2+short^2) sqrt((long-delta)^2+short^2); long+delta long-delta]; % sqrt((29.9+-0.3)^2+18^2); 29.9+-0.3, in the layout of cables are paralle to long edges.
-    end
+    sys_cnfg.patch(i).rho = getStO2PatchRho(sys_cnfg.patch(i).type);
 end
 
 %% LSL configuration
@@ -201,12 +147,14 @@ sys_cnfg.lsl.lslib = lsl_loadlib();
 sys_cnfg.lsl.InSLabel = {'fNIRS'};
 sys_cnfg.lsl.OutSLabel = {'StO2'};
 sys_cnfg.lsl.InTLabel = 'Trigger_in';
-sys_cnfg.lsl.OutTLabel = 'Trigger_out';
+% obsolete, handled by TrigCtrlGUI:
+% sys_cnfg.lsl.OutTLabel = 'Trigger_out';
 % default stream name
 sys_cnfg.lsl.InSName = 'Aurora'; % 'NSP2_Stream';
 sys_cnfg.lsl.OutSName = 'CerebOx_Stream';
 sys_cnfg.lsl.InTName = 'NIRStarTriggers';
-sys_cnfg.lsl.OutTName = 'Trigger';
+% obsolete, handled by TrigCtrlGUI:
+% sys_cnfg.lsl.OutTName = 'Trigger';
 
 end
 

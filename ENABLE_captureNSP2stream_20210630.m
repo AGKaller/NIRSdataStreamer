@@ -10,43 +10,66 @@
 clear
 
 
+% ========== CAVE CAVE ==========
+%:: CEREBOX STREAMING DISABLED ::
+% ===============================
+
+
 % TODO: 
-% ordnerstruktur mit pid, studydate-studytime
-% GUI bolus trigger - improve responsiveness, use parfeval to run in
-%       separate process. Use _exported-GUI! Check output/setting of bolusTrgNums
-% Laengerer, definierter Vorlauf fue perfusion-Messungen. Retro-Prospektiv?
-
-%% initialize paths
-rootPth = fileparts(fileparts(mfilename('fullpath'))); % 'C:\Users\nradu\Documents\MATLAB';
-addpath(fullfile(rootPth,'DataStreamer','util'));
-addpath(genpath(fullfile(rootPth,'liblsl-Matlab')));
-addpath(fullfile(rootPth,'jsonlab-2.0'));
-addpath(fullfile(rootPth,'TriggerCtrlGUI'));
-
-% paths = Paths_init('Lin'); % only necessary for offline testing
-
-nspConfigPth = 'C:\Users\nradu\Documents\NIRx\Configurations';
-nspDataPth = 'C:\Users\nradu\Documents\NIRx\Data';
-
-outPath = '\\AFS\fbi.ukl.uni-freiburg.de\projects\CascadeNIRS\test\202101_NIRSport2_test\StreamOutput';
-outPath_fallback = fullfile(userpath,'ENABLE_data_fallbackPth',datestr(datetime,'yyyy-mm-dd'));
+% Check right configuration (via nchn or via last measurement config in
+% NIRx data folder?) and bring up question dialog if to proceed or to
+% change config.
+%
+% Investigate: When measurements are long and raw-files grow large, network
+% traffic outgrows and things (this script) get laggy. Solution: write
+% locally and copy when measurement/bolus stops. (can this be deployed to
+% avoid blocking of Matlab?)
+%
+% Bolus pre buffer writing: adapt size (and end time?) according to
+% position of Trigger in current chunk.
 
 %% SET PARAMETERS
 
-tBoxCOM = 'COM4';
+PID = 'ENABLE_002'; % 'TEST'; % 
+SID = sprintf('%s-093000',datestr(now,'yyyymmdd'));
+% shortLongCfg = 'Sheep2a_211029.ncfg'; % 
+% shortLongCfg = 'Sheep2a_211029_SCD.ncfg'; % 
+shortLongCfg = 'Sheep2a_211029_SCD_long.ncfg'; % 
+% shortLongCfg = 'Sheep2a_211029_long.ncfg'; % 
 
-cerebOxCfg = 'Sheep20210602cerebOx2d.ncfg';
-shortLongCfg = 'Sheep20210602min18max40v2d.ncfg';
+% % shortLongCfg = 'Sheep2a_211029_long_sine.ncfg'; % 
+% % shortLongCfg = 'Sheep2a_211029_SCD_long_sine.ncfg'; % 
+% shortLongCfg = 'Sheep2a_211029_SCD.ncfg'; % 'Sheep2a_211029.ncfg'; % 'Sheep2a_211029_sine.ncfg'; % 
 
+% vers b:
+% shortLongCfg = 'Sheep2b_211029_sine.ncfg'; % 'Sheep2b_211029_SCD.ncfg'; % 'Sheep2b_211029.ncfg'; % 
+cerebOxCfg = shortLongCfg; %'Sheep2a_211029.ncfg';
+
+
+% constants
+bolusPreTrgNum = 48;
+bolusPreLength = 30; % seconds
 bolusTrgNum = [49 50 51];
 bolusChunkSec = 100;
 StO2rate = 1;
 
+
+%% initialize paths
+rootPth = fileparts(mfilename('fullpath')); % 'C:\Users\nradu\Documents\MATLAB';
+addpath(fullfile(rootPth,'util'));
+P = setPath();
+
+nspConfigPth = P.nspConfigPth;
+outPath = fullfile(P.outPath,PID,SID);
+outPath_fallback = P.outPath_fallback;
+optLayoutPath = P.optodeLayouts;
+
+
 % ### !!! for TESTing !!! ####
 % outPath = outPath_fallback;
 
-% ------- initialize plots (only for testing): ---------
-testing = 1;
+% ------- initialize plots (only for testing, ONLY Sheep1): ---------
+testing = 0;
 if testing
     fh = figure; ah = axes('Parent',fh);
     hold(ah,'on');
@@ -65,10 +88,22 @@ sys_cnfg.StO2rate = StO2rate; % Monitoring every second;
 % see more details in system_init function
 
 if ~exist(outPath,'dir'), mkdir(outPath); end
-loFiles = {sprintf('chnPos_%s',regexprep(cerebOxCfg,'\.ncfg$','.csv'));
-           sprintf('optPos_%s',regexprep(cerebOxCfg,'\.ncfg$','.csv'))};
-for i = 1:numel(loFiles)
-    copyfile(fullfile(rootPth, 'DataStreamer', 'optodeLayouts', loFiles{i}), ...
+% loFiles = {sprintf('chnPos_%s',regexprep(cerebOxCfg,'\.ncfg$','.csv'));
+%            sprintf('optPos_%s',regexprep(cerebOxCfg,'\.ncfg$','.csv'))};
+
+
+% provide layout files .................
+layoutBaseNam = regexprep(shortLongCfg,'(_long)?(_sine|_rect)?.ncfg$','');
+
+loFiles = dir(optLayoutPath);
+loFileNames = {loFiles.name};
+lofPattern = sprintf('^(chn|opt)Pos_%s.csv$',layoutBaseNam);
+ilof = find(~cellfun(@isempty,regexp(loFileNames,lofPattern,'once')));
+assert(numel(ilof)==2, ...
+    'Unexpected number of optodeLayout-files found for setupID ''%s'' (%d), need 2!', ...
+    layoutBaseNam, numel(ilof));
+for i = 1:numel(ilof)
+    copyfile(fullfile(optLayoutPath, loFileNames{ilof(i)}), ...
              outPath);
 end
 
@@ -77,9 +112,6 @@ end
 [sys_cnfg] = lsl_init(sys_cnfg,'output');
 % Start Bolus & Trigger control GUI: (not required)
 close(findall(0,'Type','figure','-and','Name','BolusTriggerCtrl'));
-p = gcp();
-TCH = parfeval(p,@()TrigCtrlGUI_exported(sys_cnfg.lsl.outlet_trg,tBoxCOM),1);
-TCH.bolusTrgNums = bolusTrgNum;
 
 %% initialize physical constants
 % For adult head
@@ -177,7 +209,7 @@ while true % toc < Tstart+Ttarget
         baseOutFName = datestr(datetime,'yyyymmdd-HHMMSS');
         
         rawFmt = ['\r\n%.3f,%d,%d' repmat(',%.8f',1,size(currentChunk,1)-1)];
-        if size(currentChunk,1)-1==sys_cnfg.NChan*4 % cerebOx setup -> long channels only
+        if 0 % size(currentChunk,1)-1==sys_cnfg.NChan*4 % cerebOx setup -> long channels only
             nChn = sys_cnfg.NChan;
             rawFile = fullfile(outPath,sprintf('%s_%03d_raw.csv',baseOutFName,nChn));
             fidRaw = fopen_fallback(rawFile,...
@@ -210,10 +242,23 @@ while true % toc < Tstart+Ttarget
             warning('Number of channels in LSL stream does not match nirs configuration.\nWriting to file %s.',rawFile);
         end
         fclose(fidRaw);
+        preBolusBuffLen = ceil(bolusPreLength*fs)*2;
+        preBolusBuff = nan(size(currentChunk,1)+2,preBolusBuffLen);
+    end % if startNewFile
+    
+    currentDATA = [t0+currentTStamp; trgs; currentChunk];
+    
+    % fill pre-Bolus-buff .................................................
+    chnkLen = size(currentDATA,2);
+    if chnkLen < preBolusBuffLen
+        preBolusBuff = [preBolusBuff(:,chnkLen+1:end) currentDATA];
+    else
+        preBolusBuff = currentDATA;%(:,end-preBolusBuffLen+1:end);
     end
     
     % create files for bolus chunk ........................................
-    iBolus = ismember(trgChunk(2,:),bolusTrgNum(1));
+    iBolus = ismember(currentDATA(2,:),bolusTrgNum(1));
+%     iBolus = ismember(trgChunk(2,:),bolusTrgNum(1));
     % TODO (minor): check for bolus abortion trigger?!
     if any(iBolus) && ~bolus_running
         fprintf('%s\t bolus initiated.\n',datestr(now,'yyyy-mm-dd HH:MM:SS'));
@@ -230,25 +275,33 @@ while true % toc < Tstart+Ttarget
 %             fprintf(fidCOx_bol,cerebOxHead);
 %         else
             fprintf(fidRaw_bol,bolHead);
+            iBuff1 = size(preBolusBuff,2) - find(iBolus(end:-1:1),1,'first') + 1;
+%             iBuff1 = find(preBolusBuff(2,:)==bolusTrgNum(1),1,'last');
+            iBuff0 = max(1, iBuff1 - preBolusBuffLen/2 + 1);
+            preBolChnk = preBolusBuff(:,iBuff0:end);
+            iBuff0 = find(~isnan(preBolChnk(1,:)),1,'first');
+            preBolChnk = preBolChnk(:,iBuff0:end);
+            preBolChnk(2,1) = bolusPreTrgNum;
+            fprintf(fidRaw_bol,rawFmt,preBolChnk);
             fclose(fidRaw_bol);
 %         end            
+    elseif bolus_running
+        fidRaw_bol = fopen_fallback(bolFile,...
+                                    outPath_fallback,'a');
+        fprintf(fidRaw_bol,rawFmt,currentDATA);
+        fclose(fidRaw_bol);
     end
+    preBolusBuff = preBolusBuff(:,end-preBolusBuffLen+1:end);
     
     % write data
     fidRaw = fopen_fallback(rawFile,...
                         outPath_fallback, 'a');
-    fprintf(fidRaw,rawFmt,[t0+currentTStamp; trgs; currentChunk]);
+    fprintf(fidRaw,rawFmt,currentDATA);
     fclose(fidRaw);
-    if bolus_running
-        fidRaw_bol = fopen_fallback(bolFile,...
-                                    outPath_fallback,'a');
-        fprintf(fidRaw_bol,rawFmt,[t0+currentTStamp; trgs; currentChunk]);
-        fclose(fidRaw_bol);
-    end
     
     % calculate StO2 if there is enough data for one window
     if cerebOxMeas 
-        cbOxbuf = [cbOxbuf [t0+currentTStamp; trgs; currentChunk]];
+        cbOxbuf = [cbOxbuf currentDATA];
         for iBlk = 1:floor(size(cbOxbuf,2)/Width_Wd)
             bufIdx = (1:Width_Wd) + (iBlk-1)*Width_Wd;
             bufOut = calc_OxStO2(sum(cbOxbuf(3:end,bufIdx),2).', cnsts, sys_cnfg);
