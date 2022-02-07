@@ -22,15 +22,10 @@
 %       sys_cnfg.lsl.OutSLabel: Output Stream label
 %       sys_cnfg.lsl.OutSName:  Output Stream name
 
-function [sys_cnfg] = system_initFR(ncfgFile)
-% TODO: change input to aurora config name, e.g. sheep20210602long and use
-% switch-case to set correct NChan and Optodes, Types ,etc
+function [sys_cnfg] = stO2_getCFG(ncfgFile)
 
 [~,ncfgName,~] = fileparts(ncfgFile);
-rootDir = fileparts(fileparts(mfilename('fullpath')));
 %% NSP2 configuration
-% sys_cnfg.srate = floor(15.3);  % floor(10.2); % Sampling rate in Hz
-% sys_cnfg.NChan = NChan; % former sys_cnfg.Bin_d = 64
 sys_cnfg.lambda = [760 850];
 
 %% StO2 processing
@@ -42,20 +37,10 @@ live = 1;  % online 1, offline 0;
 % % init filter coefficients
 % [sys_cnfg.filt.b, sys_cnfg.filt.a] = butter(forder, fc/sys_cnfg.srate*2, 'low');
 % sys_cnfg.filt.zi = zeros(max(length(sys_cnfg.filt.a),length(sys_cnfg.filt.b))-1,1);
-% % StO2 update rate
 
 %% NSP2 channel - Probe assignment
 % sampling rate & number of channels
 
-% switch ncfgName
-%     case 'Sheep20210602all'
-%         sys_cnfg.srate = floor(10.2);
-%         sys_cnfg.NChan = 144;
-%     case 'Sheep20210602'
-%         sys_cnfg.srate = floor(10.2);
-%         sys_cnfg.NChan = 86;
-%     otherwise, error('Unknown configuration name!');
-% end
 [sys_cnfg.NChan, sys_cnfg.srate, sys_cnfg.chnMask, tag] = getCfgParam(ncfgFile, ...
     'nchn', 'fs', 'channel_mask', 'tag');
 srcCfg = regexp(tag,sprintf('[^%s]*(?=\\.ncfg$)',fsepEscpd),'match','once');
@@ -69,21 +54,13 @@ srcNChn = sum(chnMskNum,2); % number of channels each source contributes to.
 
 % Optodes = [
 %     1 1 2 2;
-%     3 3 4 4
-%     5 5 6 6
-%     7 7 8 8
 %     ];
-% %   S1 D1 D2 S2   Probe1, linear as what you see by eye, for square, the principle is the same: the closer Source and detector are next to each other in the Optodes matrix.
-% %   S1 D1 D2 S2   Probe2
-% %   S1 D1 D2 S2   Probe3
-% %   S1 D1 D2 S2   Probe4
+% %   S1 D1 D2 S2   Probe1, linear as what you see by eye, for square, the
+% principle is the same: the closer Source and detector are next to each
+% other in the Optodes matrix.
 % Types = {
 %     'Linear20-16' 
-%     'Rectangular35-30' 
-%     'Linear20-16' 
-%     'Linear20-16'
 %     };
-% live = 0; % 1 for online streaming, 0 for offline
 %% Linear Patch
 % [ Source A ----- Detector A ----- Detector B ----- Source B ]
 %
@@ -140,21 +117,6 @@ for i=1:sys_cnfg.NPatch
     sys_cnfg.patch(i).rho = getStO2PatchRho(sys_cnfg.patch(i).type);
 end
 
-%% LSL configuration
-% load lsl library
-sys_cnfg.lsl.lslib = lsl_loadlib();
-% stream labels
-sys_cnfg.lsl.InSLabel = {'fNIRS'};
-sys_cnfg.lsl.OutSLabel = {'StO2'};
-sys_cnfg.lsl.InTLabel = 'Trigger_in';
-% obsolete, handled by TrigCtrlGUI:
-% sys_cnfg.lsl.OutTLabel = 'Trigger_out';
-% default stream name
-sys_cnfg.lsl.InSName = 'Aurora'; % 'NSP2_Stream';
-sys_cnfg.lsl.OutSName = 'CerebOx_Stream';
-sys_cnfg.lsl.InTName = 'NIRStarTriggers';
-% obsolete, handled by TrigCtrlGUI:
-% sys_cnfg.lsl.OutTName = 'Trigger';
 
 end
 

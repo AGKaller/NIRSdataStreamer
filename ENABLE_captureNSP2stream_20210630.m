@@ -1,12 +1,3 @@
-%% Evaluate the Oxygen Saturation level, StO2 of online Streaming LSL data.
-% --- adapted from lsl_example/Eval_online_lsl --- (KS)
-% Update 2021.05.31, Lin Yang
-% Structure:
-%   Initializations - Initialize Paths, System Configuration, LSL data
-%       structure, physical constants, and variables for final StO2 results
-%   Streaming calculation and display  - Streaming Data collecting, buffer transfering,
-%       data pre-processing, StO2 Calculation, output streaming generating,
-%       and final results dynamic display.
 clear
 
 
@@ -32,17 +23,9 @@ clear
 
 PID = 'ENABLE_002'; % 'TEST'; % 
 SID = sprintf('%s-093000',datestr(now,'yyyymmdd'));
-% shortLongCfg = 'Sheep2a_211029.ncfg'; % 
-% shortLongCfg = 'Sheep2a_211029_SCD.ncfg'; % 
 shortLongCfg = 'Sheep2a_211029_SCD_long.ncfg'; % 
-% shortLongCfg = 'Sheep2a_211029_long.ncfg'; % 
-
-% % shortLongCfg = 'Sheep2a_211029_long_sine.ncfg'; % 
-% % shortLongCfg = 'Sheep2a_211029_SCD_long_sine.ncfg'; % 
-% shortLongCfg = 'Sheep2a_211029_SCD.ncfg'; % 'Sheep2a_211029.ncfg'; % 'Sheep2a_211029_sine.ncfg'; % 
 
 % vers b:
-% shortLongCfg = 'Sheep2b_211029_sine.ncfg'; % 'Sheep2b_211029_SCD.ncfg'; % 'Sheep2b_211029.ncfg'; % 
 cerebOxCfg = shortLongCfg; %'Sheep2a_211029.ncfg';
 
 
@@ -65,23 +48,10 @@ outPath_fallback = P.outPath_fallback;
 optLayoutPath = P.optodeLayouts;
 
 
-% ### !!! for TESTing !!! ####
-% outPath = outPath_fallback;
-
-% ------- initialize plots (only for testing, ONLY Sheep1): ---------
-testing = 0;
-if testing
-    fh = figure; ah = axes('Parent',fh);
-    hold(ah,'on');
-    for i = 1:12
-        tph(i) = plot(NaN,'Parent',ah);
-    end
-end
-
 %% initialize system configuration
 fprintf('   ==== INITIALIZE - Please wait.... ==== \n');
-sys_cnfg = system_initFR(fullfile(nspConfigPth,cerebOxCfg)); % define Sampling rate, Monitoring rate, NSP2 Channels assignment, Source/detector separations on probes, stream name, etc.
-sys_cnfg.StO2rate = StO2rate; % Monitoring every second;
+stO2_cfg = stO2_getCFG(fullfile(nspConfigPth,cerebOxCfg)); % define Sampling rate, Monitoring rate, NSP2 Channels assignment, Source/detector separations on probes, stream name, etc.
+stO2_cfg.StO2rate = StO2rate; % Monitoring every second;
 
 [shortLongMeas.NChan, shortLongMeas.srate, shortLongMeas.chnMask] = getCfgParam(fullfile(nspConfigPth,shortLongCfg), ...
     'nchn', 'fs', 'channel_mask');
@@ -109,7 +79,8 @@ end
 
 %% initialize LSL & TriggerCtrlGUI
 % [sys_cnfg] = lsl_init(sys_cnfg,'input');
-[sys_cnfg] = lsl_init(sys_cnfg,'output');
+lsl_cfg = lsl_getCFG();
+[lsl_cfg] = lsl_init(lsl_cfg,'output');
 % Start Bolus & Trigger control GUI: (not required)
 close(findall(0,'Type','figure','-and','Name','BolusTriggerCtrl'));
 
@@ -119,7 +90,7 @@ close(findall(0,'Type','figure','-and','Name','BolusTriggerCtrl'));
 
 % For phantoms test only, where different patchs monitor phantoms with different properties.
 cnsts(1) = constants_init('AdultHead'); % Probe1
-cnsts = repmat(cnsts,sys_cnfg.NPatch,1);
+cnsts = repmat(cnsts,stO2_cfg.NPatch,1);
 
 %% Initialize Variables
 % init = true;
@@ -127,7 +98,7 @@ cnsts = repmat(cnsts,sys_cnfg.NPatch,1);
 % StO2buf.c = [];
 % StO2buf.St = [];
 % SP_start = 0; % Initialize the starting sampling point for monitoring
-Width_Wd = ceil(sys_cnfg.srate/sys_cnfg.StO2rate); % width of the windows of monitoring in the unit of sampling points
+Width_Wd = ceil(stO2_cfg.srate/stO2_cfg.StO2rate); % width of the windows of monitoring in the unit of sampling points
 
 % time to wait each loop (to save CPU load), unit: s
 ptime = 0.01;
@@ -147,8 +118,8 @@ end
 rawHeadLong = metaHead;
 for prfx = {'wl1' 'wl2' 'oxy' 'dxy'}
     frmt = sprintf(',%s_S%%02d-D%%02d',prfx{1});
-    for srci = 1:numel(sys_cnfg.chnMask)
-        deti = strfind(sys_cnfg.chnMask{srci},'1');
+    for srci = 1:numel(stO2_cfg.chnMask)
+        deti = strfind(stO2_cfg.chnMask{srci},'1');
         srciHead = sprintf(frmt, [ones(1,numel(deti))*srci; ...
                                   deti]);
         rawHeadLong = sprintf('%s%s',rawHeadLong,srciHead);
@@ -158,7 +129,7 @@ cerebOxHead = metaHead;
 cerebOxTyps = {'StO2','HbO','HbR','muaWL1','muaWL2'};
 for prfx = cerebOxTyps
     frmt = sprintf(',%s_S%%02dD%%02dD%%02dS%%02d',prfx{1});
-    ptchHead = sprintf(frmt,sys_cnfg.patchOptodes.');
+    ptchHead = sprintf(frmt,stO2_cfg.patchOptodes.');
     cerebOxHead = sprintf('%s%s',cerebOxHead,ptchHead);
 end
 
@@ -177,9 +148,9 @@ while true % toc < Tstart+Ttarget
     emptyChunkCnt = 0;
     while isempty(currentChunk)
         if startNewFile && rem(emptyChunkCnt,400)==0 % check for new stream from time to time.
-            [sys_cnfg] = lsl_init(sys_cnfg,'input',true);
+            [lsl_cfg] = lsl_init(lsl_cfg,'input',true);
         end
-        [currentChunk, currentTStamp] = sys_cnfg.lsl.inlet.pull_chunk();
+        [currentChunk, currentTStamp] = lsl_cfg.inlet.pull_chunk();
         if isempty(currentChunk)
             if emptyChunkCnt==600 % .01*100 = 1s without new chunk
                 fprintf('%s\t waiting for new stream.\n',datestr(now,'yyyy-mm-dd HH:MM:SS'));
@@ -191,7 +162,7 @@ while true % toc < Tstart+Ttarget
     end
     
     % pull and process trigger:
-    [trgChunk,trgTStamp] = sys_cnfg.lsl.inlet_trg.pull_chunk();
+    [trgChunk,trgTStamp] = lsl_cfg.inlet_trg.pull_chunk();
     trgs = zeros(1,size(currentChunk,2));
     for ti = 1:numel(trgTStamp)
         [~,mini] = min(abs(currentTStamp-trgTStamp(ti)));
@@ -210,21 +181,21 @@ while true % toc < Tstart+Ttarget
         
         rawFmt = ['\r\n%.3f,%d,%d' repmat(',%.8f',1,size(currentChunk,1)-1)];
         if 0 % size(currentChunk,1)-1==sys_cnfg.NChan*4 % cerebOx setup -> long channels only
-            nChn = sys_cnfg.NChan;
+            nChn = stO2_cfg.NChan;
             rawFile = fullfile(outPath,sprintf('%s_%03d_raw.csv',baseOutFName,nChn));
             fidRaw = fopen_fallback(rawFile,...
                                     outPath_fallback, 'w');
             fprintf('\t\t\t\t\t(cerebOx)\n');
             cerebOxMeas = true;
             cbOxbuf = [];
-            nDataHead = size(sys_cnfg.patchOptodes,1) * numel(cerebOxTyps);
+            nDataHead = size(stO2_cfg.patchOptodes,1) * numel(cerebOxTyps);
             coxFmt = ['\r\n%.3f,%d,%d' repmat(',%.8f',1,nDataHead)];
             coxFile = fullfile(outPath,sprintf('%s_%03d_oxygenation.csv',baseOutFName,nChn));
             fidCOx = fopen_fallback(coxFile,...
                                     outPath_fallback,'w');
             fprintf(fidRaw,rawHeadLong);
             fprintf(fidCOx,cerebOxHead);
-            fs = sys_cnfg.srate;
+            fs = stO2_cfg.srate;
             fclose(fidCOx);
             bolHead = rawHeadLong;
         else % tomographic setup
@@ -304,7 +275,7 @@ while true % toc < Tstart+Ttarget
         cbOxbuf = [cbOxbuf currentDATA];
         for iBlk = 1:floor(size(cbOxbuf,2)/Width_Wd)
             bufIdx = (1:Width_Wd) + (iBlk-1)*Width_Wd;
-            bufOut = calc_OxStO2(sum(cbOxbuf(3:end,bufIdx),2).', cnsts, sys_cnfg);
+            bufOut = calc_OxStO2_new(sum(cbOxbuf(3:end,bufIdx),2).', cnsts, stO2_cfg);
             c = squeeze(bufOut.c).';
             mua = bufOut.mua.';
             writeOut = [cbOxbuf(1:3,bufIdx(1)); ... frame; TStamp (first of StO2 chunk)
@@ -345,9 +316,6 @@ while true % toc < Tstart+Ttarget
         %       mua: calculated absorption coefficients [T x WL x P] - T time points, WL Wavelengths, P patches
         %       c: calculated StO2 [T x C x P] - T time points, C Chromophores (HbO / Hb), P patches
         
-        
-        % feed StO2 data into LSL output stream
-%         sys_cnfg.lsl.outlet.push_sample(bufOut.St); & outlet disabled!
     end
     if bolus_running && toc(bolusTic)>bolusChunkSec
         fprintf('%s\t recording bolus chunk stopped; closing files.\n',datestr(now,'yyyy-mm-dd HH:MM:SS'));
