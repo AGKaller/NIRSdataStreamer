@@ -1,19 +1,51 @@
 function rho = VOT220126(patchNam)
 %
 
-delta = FNC.LED_DELTA;
+import StO2patchTypes.*
+delta = FNC.LED_DELTA();
 
 switch patchNam
 
+    % ---- ASYMETRIC --------------------
+    case 'Rect33-21_asym'
+        long = 33; % long edge length
+        short = 21.48; % short edge length
+        rho = [sqrt(long^2+short^2); long];
+        
+    case 'Sqr25_asym'
+        long = 25.46; % long edge length
+        short = 25.46; % short edge length
+        rho = [sqrt(long^2+short^2); long];
+
+    case 'Trap28-25-21_asym'
+        leg = 28;
+        long = 25.46; % long edge length
+        short = 21.48; % short edge length
+        
+        diag = FNC.trapz_diag(long,short,leg); % when cable is vertical to the 2 parallel sides        
+        rho = [diag; leg];
+
+    case 'Trap18-51-25_asym'
+        leg = 18;
+        long = 2*25.46; % long edge length
+        short = 25.46; % short edge length
+        
+        diag = FNC.trapz_diag(long,short,leg); % when cable is vertical to the 2 parallel sides        
+        rho = [diag; leg];
+
+    
+    % ---- SYMETRIC --------------------
     case 'Rect33-21_prec_sym'
         long = 33; % long edge length
         short = 21.48; % short edge length
-        rho = [sqrt((long+delta)^2+short^2) sqrt((long-delta)^2+short^2); long+delta long-delta]; % sqrt((29.9+-0.3)^2+18^2); 29.9+-0.3, in the layout of cables are paralle to long edges.
+        rho = [sqrt((long+delta)^2+short^2) sqrt((long-delta)^2+short^2); ...
+            long+delta long-delta]; % sqrt((29.9+-0.3)^2+18^2); 29.9+-0.3, in the layout of cables are paralle to long edges.
 
     case 'Sqr25_prec_sym'
         long = 25.46; % long edge length
         short = 25.46; % short edge length
-        rho = [sqrt((long+delta)^2+short^2) sqrt((long-delta)^2+short^2); long+delta long-delta]; % sqrt((29.9+-0.3)^2+18^2); 29.9+-0.3, in the layout of cables are paralle to long edges.
+        rho = [sqrt((long+delta)^2+short^2) sqrt((long-delta)^2+short^2); ...
+            long+delta long-delta]; % sqrt((29.9+-0.3)^2+18^2); 29.9+-0.3, in the layout of cables are paralle to long edges.
 
     case 'Trap28-25-21_prec_sym'
         leg = 28;

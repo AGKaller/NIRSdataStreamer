@@ -62,7 +62,7 @@ srcCfg = regexp(tag,sprintf('[^%s]*(?=\\.ncfg$)',fsepEscpd),'match','once');
 if ~isempty(srcCfg), ncfgName = srcCfg; end
 
 sys_cnfg.srate = floor(sys_cnfg.srate);
-chnMskNum = double(vertcat(sys_cnfg.chnMask{:}))==49; % channel Mask as logicals
+chnMskNum = double(vertcat(sys_cnfg.chnMask{:}))~=48; % channel Mask as logicals
 srcNChn = sum(chnMskNum,2); % number of channels each source contributes to.
 % optode topo-layout & resulting patches:
 [Optodes, Types] = getStO2layoutPatches(ncfgName);

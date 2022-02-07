@@ -19,20 +19,31 @@ elseif startsWith(cfgname,{'Sheep2b'})
     Optodes = vertcat(o{:});
     Types = vertcat(t{:});
 
-
-%     case 'template-copyMe!'
-%         Optodes = [
-%             1 1 2 2;
-%             ];
-%         Types = {
-%             'Rectangular35-30' 
-%             };
-
 else
-    defFile = fullfile(pth,'+StO2layouts',sprintf('%s.m',cfgname));
-    if ~exist(defFile,'file')
-        error('''%s'' does not exist in package ''StO2layouts''!',cfgname);
+    
+    aliases = {...
+        % LayoutName    {mapped config filenames};
+        'VOT2201_9x3'   {'VOT2201_9x3_sine' 'VOT2201_9x3_sine_.5prc'};
+        'dummy'         {'dummy_sine' 'dummy_scd'};
+        };
+    assert(numel([aliases{:,2}])==numel(unique([aliases{:,2}])), ...
+        'A config file cannot appear for multiple aliases.');
+    isAlias = cellfun(@(x) ismember(cfgname,x), aliases(:,2)) | ...
+                ismember(aliases(:,1), cfgname);
+    assert(sum(isAlias)<2, 'Error matching config name to layout');
+    
+    if any(isAlias)
+        cfgname = aliases{isAlias,1};
     end
+    
+    % this exist-check is disabled to allow sub-packages in the
+    % StO2layouts-package, i.e. LayoutNames like 'Sheep99.rostral' located
+    % in +Sheep99/rostral.m
+%     defFile = fullfile(pth,'+StO2layouts',sprintf('%s.m',cfgname));
+%     if ~exist(defFile,'file')
+%         error('''%s'' does not exist in package ''StO2layouts''!',cfgname);
+%     end
+        
     fh = str2func(cfgname);
     [Optodes, Types] = fh();
 end

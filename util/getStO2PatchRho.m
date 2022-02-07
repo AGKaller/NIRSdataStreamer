@@ -13,7 +13,7 @@ import StO2patchTypes.*
 %     sqrt(delta^2+leg^2 - 2*delta*leg*cos( trap_beta(long,shrt,leg,+1) ));
 
 
-patchID = strsplit(patchNam,':');
+patchID = strsplit(patchNam,'.');
 if numel(patchID)==1
     patchID = [{'GENERAL'} patchID];
 end
