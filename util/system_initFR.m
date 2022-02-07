@@ -62,10 +62,10 @@ srcCfg = regexp(tag,sprintf('[^%s]*(?=\\.ncfg$)',fsepEscpd),'match','once');
 if ~isempty(srcCfg), ncfgName = srcCfg; end
 
 sys_cnfg.srate = floor(sys_cnfg.srate);
-chnMskNum = double(vertcat(sys_cnfg.chnMask{:}))==49; % channel Mask as logicals
+chnMskNum = double(vertcat(sys_cnfg.chnMask{:}))~=48; % channel Mask as logicals
 srcNChn = sum(chnMskNum,2); % number of channels each source contributes to.
 % optode topo-layout & resulting patches:
-[Optodes, Types] = getStO2patchOptodeNums(ncfgName);
+[Optodes, Types] = getStO2layoutPatches(ncfgName);
 
 % Optodes = [
 %     1 1 2 2;
@@ -137,26 +137,7 @@ sys_cnfg.patchOptodes = Optodes;
 
 %% Patch selection and channel separations
 for i=1:sys_cnfg.NPatch
-    switch sys_cnfg.patch(i).type
-        
-        case 'Linear20-16'
-            sys_cnfg.patch(i).rho = [36 20]; %mm long / short separation
-            
-        case 'Rectangular35-30'
-            sys_cnfg.patch(i).rho = [35 30];
-            
-        case 'Linear20-20'
-            sys_cnfg.patch(i).rho = [40 20];
-            
-        case 'Rectangular36-18'
-            sys_cnfg.patch(i).rho = [40.25 36];
-            
-        case 'Rectangular_precise'
-            delta = 0.2; % unit mm , half of the dies distance
-            long = 32; % long edge length
-            short = 16; % short edge length
-            sys_cnfg.patch(i).rho = [sqrt((long+delta)^2+short^2) sqrt((long-delta)^2+short^2); long+delta long-delta]; % sqrt((29.9+-0.3)^2+18^2); 29.9+-0.3, in the layout of cables are paralle to long edges.
-    end
+    sys_cnfg.patch(i).rho = getStO2PatchRho(sys_cnfg.patch(i).type);
 end
 
 %% LSL configuration
