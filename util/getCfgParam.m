@@ -12,6 +12,12 @@ for i = 1:numel(varargin)
             varargout{i} = sum(count(cfgstrct.channel_mask,'1'));
         case {'json'}
             varargout{i} = cfgstrct;
+        case {'mastercfg'}
+            pattrn = '(?<=(optimal, based on )?master, from ).*';
+            uri = regexp(cfgstrct.tag,pattrn,'match','once');
+            varargout{i} = regexprep(uri,'\\{2}','\');
+        case {'optimized'}
+            varargout{i} = ~isempty(regexp(cfgstrct.tag,'^optimal','once'));
         otherwise
             try
                 param = validatestring(varargin{i},fieldnames(cfgstrct));
@@ -22,4 +28,15 @@ for i = 1:numel(varargin)
     end
 end
 
+end
+
+
+
+function fsep = fsepEscpd
+%
+if ispc
+    fsep = '\\';
+else
+    fsep = filesep;
+end
 end

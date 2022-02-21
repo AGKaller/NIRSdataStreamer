@@ -24,6 +24,7 @@ else
     aliases = {...
         % LayoutName    {mapped config filenames};
         'VOT2201_9x3'   {'VOT2201_9x3_sine' 'VOT2201_9x3_sine_.5prc'};
+        'VOT220215'   {'VOT220215_sine'};
         'dummy'         {'dummy_sine' 'dummy_scd'};
         };
     assert(numel([aliases{:,2}])==numel(unique([aliases{:,2}])), ...
@@ -45,7 +46,21 @@ else
 %     end
         
     fh = str2func(cfgname);
-    [Optodes, Types] = fh();
+    try
+        [Optodes, Types] = fh();
+    catch ME
+        if strcmpi(ME.identifier,'MATLAB:UndefinedFunction')
+            error('getStO2layoutPatches:unrecognizedLayout', ...
+                'No implementation of layout ''%s'' found.', ...
+                cfgname);
+        else
+            baseME = MException('getStO2layoutPatches:layoutFncFailed', ...
+                        sprintf('Implementation of layout ''%s'' caused an error.', ...
+                                cfgname));
+            baseME = baseME.addCause(ME);
+            throw(baseME);
+        end
+    end
 end
 
 end

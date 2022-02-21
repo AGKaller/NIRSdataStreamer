@@ -19,8 +19,22 @@ if numel(patchID)==1
 end
 
 fncH = str2func(strjoin(patchID(1:end-1),'.'));
-rho = fncH(patchID{end});
 
+try
+    rho = fncH(patchID{end});
+catch ME
+    if strcmpi(ME.identifier,'MATLAB:UndefinedFunction')
+        error('getStO2PatchRho:unrecognizedPatch', ...
+            'No collection of patch types found with name ''%s''.', ...
+            func2str(fncH));
+    else
+        baseME = MException('getStO2PatchRho:patchFncFailed', ...
+            sprintf('Patch type collection ''%s'' with input ''%s'' caused an error.', ...
+                    func2str(fncH), patchID{end}));
+        baseME = baseME.addCause(ME);
+        throw(baseME);
+    end
+end
 
 
 end % end function
