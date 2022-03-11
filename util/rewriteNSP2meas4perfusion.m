@@ -1,5 +1,5 @@
 function rewriteNSP2meas4perfusion(infile,outPath, ...
-    overwrite,bolusPreLength,bolusChunkSec)
+    overwrite,bolusPreLength,bolusChunkSec,inclAcc)
 %
 
 
@@ -16,6 +16,9 @@ if ~exist('bolusPreLength','var') || isempty(bolusPreLength)
 end
 if ~exist('bolusChunkSec','var') || isempty(bolusChunkSec)
     bolusChunkSec = 100; % seconds
+end
+if ~exist('inclAcc','var') || isempty(inclAcc)
+    inclAcc = false;
 end
 
 bolusInitTrg = 49;
@@ -66,8 +69,6 @@ assert(exist(nirsFile,'file'),...
 %% load & prep data
 
 [nch, chnMask] = getCfgParam(cfgFile,'nch','channel_mask');
-header = mkHeader(chnMask);
-fmt = ['\r\n%.3f,%d,%d' repmat(',%.8f',1,nch*4)];
 
 nd = load(nirsFile,'-mat');
 dA = -log(bsxfun(@rdivide, nd.d, mean(nd.d,1)));
@@ -83,9 +84,22 @@ trg = zeros(ndp,1);
 trg(trgT) = trgN;
 
 D = [tstmp, trg, (1:ndp).', nd.d, oxy, dxy].';
+fmt = ['\r\n%.3f,%d,%d' repmat(',%.8f',1,nch*4)];
+
+if inclAcc
+    acc = permute(nd.aux,[1 3 2]);
+    nAcc = size(acc,3)/2;
+    D = [D; reshape(acc,ndp,nAcc*6).']; % x,y,z X acc,gyr
+    header = mkHeader(chnMask,'rawHb',nAcc);
+    fmt = [fmt repmat(',%.3f',1,nAcc*6)];
+else
+    header = mkHeader(chnMask,'rawHb',0);
+end
 
 
 %% write RAW output
+
+if ~exist(outPath,'dir'), mkdir(outPath); end
 
 outRawNam = sprintf('%s_%03d_raw.csv', ...
     datestr(cfgIfo.datenum,'yyyymmdd-HHMMSS'), nch);
@@ -128,7 +142,7 @@ for ib = 1:numel(iBolInit)
     [~,iEndBol] = min(abs(nd.t-(tBol+bolusChunkSec)));
     Db = D(:,iPreBol:iEndBol);
     Db(2,1) = bolusPreTrgNum;
-    fidPerf = fopen(perfFileNam,'w');
+    fidPerf = fopen(perfFile,'w');
     fprintf(fidPerf,header);
     fprintf(fidPerf,fmt,Db);
     fclose(fidPerf);
