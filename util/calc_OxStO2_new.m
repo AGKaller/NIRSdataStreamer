@@ -35,7 +35,7 @@ for pp=1:sys_cnfg.NPatch
     res.mua(:,pp) = mua;
     
     C = mua/cnsts(pp).A; % concentration = mua * cross^-1; [HbO2 HHb]
-    res.c(:,:,pp) = C;
+    res.c(:,pp) = C;
     
     StO2 = C(:,1)./(C(:,1)+C(:,2));
     res.St(:,pp) = StO2;
