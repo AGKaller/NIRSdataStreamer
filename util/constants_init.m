@@ -11,6 +11,8 @@
 
 function [cnsts] = constants_init(TissueType)
 
+if nargin==0, TissueType = 'AdultHead'; end
+
 % assumed percentage content of human head are water
 cnsts.perc_water = 0.75;
 % water absorption
