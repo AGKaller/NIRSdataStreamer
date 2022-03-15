@@ -57,6 +57,19 @@ switch patchNam
         diag_shrter = FNC.trapz_diag(long-2*delta,short,leg_shrter);
         
         rho = [diag_longer diag_shrter; leg_longer leg_shrter]; % sqrt((29.9+-0.3)^2+18^2); 29.9+-0.3, in the layout of cables are paralle to long edges.
+    
+    case 'R_Trap18-51-25_prec_sym_FALSE'
+        leg = 18;
+        long = 2*25.46; % long edge length
+        short = 25.46; % short edge length
+        
+        leg_longer = FNC.trapz_legDelta(long,short,leg,delta);
+        leg_shrter = FNC.trapz_legDelta(long,short,leg,-delta);
+        
+        diag_longer = FNC.trapz_diag(long,short,leg_longer); % when cable is aligned with the longer side
+        diag_shrter = FNC.trapz_diag(long,short,leg_shrter);
+        
+        rho = [diag_longer diag_shrter; leg_longer leg_shrter]; % sqrt((29.9+-0.3)^2+18^2); 29.9+-0.3, in the layout of cables are paralle to long edges.
 
     otherwise, error('Patch type ''%s'' no found in %s!',patchNam,mfilename);
 

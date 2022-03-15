@@ -72,7 +72,7 @@ switch patchNam
         leg_longer = FNC.trapz_legDelta(long,short,leg,delta,'paral');
         leg_shrter = FNC.trapz_legDelta(long,short,leg,-delta,'paral');
         
-        diag_longer = FNC.trapz_diag(long+2*delta,short,leg_longer); % when cable is vertical to the 2 parallel sides
+        diag_longer = FNC.trapz_diag(long+2*delta,short,leg_longer); % when cable is parallel to the 2 parallel sides
         diag_shrter = FNC.trapz_diag(long-2*delta,short,leg_shrter);
         
         rho = [diag_longer diag_shrter; leg_longer leg_shrter]; % sqrt((29.9+-0.3)^2+18^2); 29.9+-0.3, in the layout of cables are paralle to long edges.
