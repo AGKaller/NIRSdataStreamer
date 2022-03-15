@@ -7,15 +7,16 @@ if ~exist('orient','var')
     orient = 'orthogonal';
 end
 
-orient = validatestring(orient,{'orthogonal','parallel'});
+orient = validatestring(orient,{'orthogonal','parallel'}, ...
+                        mfilename,'orient',5);
 
 switch orient
     case 'orthogonal'
         trap_beta = @(long, shrt, leg, d) ...
-            pi/2 + d*asin( ((long-shrt)/2)/leg );
+            pi/2 + d*acos( ((long-shrt)/2)/leg );
     case 'parallel'
         trap_beta = @(long, shrt, leg, d) ...
-            (d>0)*pi - d*asin( ((long-shrt)/2)/leg );
+            (d>0)*pi - d*acos( ((long-shrt)/2)/leg );
     otherwise, error('BUG');
 end
 
