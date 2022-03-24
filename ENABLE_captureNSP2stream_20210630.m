@@ -174,7 +174,8 @@ while true % toc < Tstart+Ttarget
         fprintf('%s\t opening new files...\n',datestr(now,'yyyy-mm-dd HH:MM:SS'));
         startNewFile = false;
         % time stamp at start of measurement ...
-        % ... as number of seconds of current day:
+        % ... as number of seconds of current day: NO!? Uptime of PC in
+        % seconds?!
         t0 = rem(now,1)*24*60*60 - currentTStamp(1);
         
         baseOutFName = datestr(datetime,'yyyymmdd-HHMMSS');
