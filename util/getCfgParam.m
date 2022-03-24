@@ -18,12 +18,19 @@ for i = 1:numel(varargin)
             varargout{i} = regexprep(uri,'\\{2}','\');
         case {'optimized'}
             varargout{i} = ~isempty(regexp(cfgstrct.tag,'^optimal','once'));
+        case {'nacc','naccelerometer'}
+            if cfgstrct.use_accelerometer
+                varargout{i} = sum(cfgstrct.device_split(:,2))/8;
+            else
+                varargout{i} = 0;
+            end
         otherwise
             try
                 param = validatestring(varargin{i},fieldnames(cfgstrct));
                 varargout{i} = cfgstrct.(param);
-            catch
-                error('Parameter not implemented/not found in json!');
+            catch ME
+                throw(addCause(MException('DataStreamer:getCfgParam:cfgParamNotFound',...
+                    'The input argument %d was not recognized and the parameter was not found in the json file!',i),ME));
             end
     end
 end
