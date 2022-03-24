@@ -25,8 +25,11 @@ StO2fh = @calc_OxStO2_new;
 
 ndp = size(data,1);
 
-assert(ndp>=winLen, ...
-    'Window length is larger than number of data points (size(data,1))!');
+validateattributes(winLen,'numeric',{'scalar','integer','positive'}, ...
+    mfilename,'winLen',4);
+assert(ndp>=winLen, 'DataStreamer:raw2StO2:WinLengthExceedsNDP', ...
+    'Window length (%d) is larger than number of data points (size(data,1) = %d)!', ...
+    winLen, ndp);
 
 if ~exist('winShft','var') || isempty(winShft)
     winShft = winLen;
