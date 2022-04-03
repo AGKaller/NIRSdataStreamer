@@ -1,7 +1,6 @@
 function rho = trapz_rho(srcDist,detDist,srcDetDist,cblSym,cblOri,cblPos)
 % Rho for trapezoid patches
 %
-% rho = trapz_rho(srcDist,detDist,srcDetDist,'opposite') % or equivalent:
 % rho = trapz_rho(srcDist,detDist,srcDetDist,'antisymmetric')
 % 
 % rho = trapz_rho(srcDist,detDist,srcDetDist,'symmetric',cblOri,cblPos) 
@@ -10,25 +9,27 @@ function rho = trapz_rho(srcDist,detDist,srcDetDist,cblSym,cblOri,cblPos)
 %
 %
 %     Orthogonal outward:      Orthogonal inward:
-%     -S  D                    S-  D
-%     -S  D                    S-  D
+%     -S                       S-  
+%          D                       D
+%          D                       D
+%     -S                       S-  
 %
 %     Parallel outward:        Parallel inward:
-%     |                        S D
-%     S   D                    |
-%     S   D                    |
-%     |                        S D
+%     |   D                    S
+%     S                        |   D
+%     S                        |   D
+%     |   D                    S
 
 import StO2patchTypes.FNC.trapz_diag
 import StO2patchTypes.FNC.trapz_legDelta
 import StO2patchTypes.FNC.LED_DELTA
 
-cblSym = validatestring(cblSym,{'symmetric','opposite','antisymmetric'}, ...
+cblSym = validatestring(cblSym,{'symmetric','antisymmetric'}, ...
     mfilename,'cblSym',4);
 
 
 switch cblSym
-    case {'opposite','antisymmetric'}
+    case {'antisymmetric'}
         if nargin>4
             warning('DataStreamer:StO2patchTypes_FNC_trapz_diag:IgnoringAdditionalInput',...
                 'Cable orientation and position are ignored when symmetry is ''%s''!',cblSym);

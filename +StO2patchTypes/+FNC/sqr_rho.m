@@ -2,7 +2,6 @@ function rho = sqr_rho(srcDist,cblSym,varargin)
 % Rho for square patches
 % (for square patches srcDist == detDist == srcDetDist)
 % 
-% rho = sqr_rho(srcDist,'opposite') % or equivalent:
 % rho = sqr_rho(srcDist,'antisymmetric')
 %
 % rho = sqr_rho(srcDist,'symmetric',cblOri,cblPos) 

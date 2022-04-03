@@ -2,7 +2,6 @@ function rho = rect_rho(srcDist,srcDetDist,cblSym,varargin)
 % Rho for rectangular patches
 % (for rectangular patches srcDist == detDist)
 % 
-% rho = rect_rho(srcDist,srcDetDist,'opposite') % or equivalent:
 % rho = rect_rho(srcDist,srcDetDist,'antisymmetric')
 %
 % rho = rect_rho(srcDist,srcDetDist,'symmetric',cblOri,cblPos) 
