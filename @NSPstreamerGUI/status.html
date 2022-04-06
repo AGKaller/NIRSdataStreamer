@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+#prompt {
+  font-family: sans-serif;
+  text-align:center;
+  <!-- border-radius: 5px; -->
+  <!-- background-color: lightblue; -->
+  padding: 0px;
+  height: 44px;
+  <!-- vertical-align: middle; -->
+  }
+
+#dataDisplay {
+  display: flex;
+  justify-content: center; /* align horizontal */
+  align-items: center; /* align vertical */
+  border: 1px solid lightgrey;
+  min-height: 100%;
+  width; 100%;
+  padding: 0px;
+}
+
+#neutral {
+  background-color: rgba(0,0,0,0);
+  width: 100%;
+}
+#confirm {
+  background-color: #7FFF00;
+  width: 100%;
+  height: 100%;
+}
+#warn {
+  background-color: #fcff47;
+  width: 100%;
+}
+#err {
+  background-color: #DC143C;
+  width: 100%;
+}
+
+</style>
+
+<script type="text/javascript">
+         
+        function setup(htmlComponent) {
+		          
+            htmlComponent.addEventListener("DataChanged", function(event) {
+            document.getElementById("dataDisplay").innerHTML = htmlComponent.Data;
+            });     
+        }
+</script>
+</head>
+
+<body>
+     <div id="prompt">
+		
+	<!-- <span><label for="prompt"><strong>Data from MATLAB will display here:</strong></label></span> -->
+	<!-- <br/><br/> -->
+	<div id ="dataDisplay">
+	Initialize...
+	</div>
+		
+     </div>
+</body>
+
+</html>
