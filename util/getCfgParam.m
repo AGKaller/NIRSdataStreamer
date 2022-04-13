@@ -9,7 +9,7 @@ for i = 1:numel(varargin)
         case {'fs','srate'}
             varargout{i} = 46875 / cfgstrct.plan_length / cfgstrct.total_cycle_samples;
         case {'nchn','nch'}
-            varargout{i} = sum(count(cfgstrct.channel_mask,'1'));
+            varargout{i} = sum(count(cfgstrct.channel_mask,regexpPattern('[1-9]')));
         case {'json'}
             varargout{i} = cfgstrct;
         case {'mastercfg'}

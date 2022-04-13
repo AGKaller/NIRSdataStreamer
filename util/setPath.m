@@ -10,7 +10,7 @@ switch getenv('COMPUTERNAME')
         addpath(genpath(fullfile(rootPth,'liblsl-Matlab')));
         addpath(fullfile(rootPth,'jsonlab-2.0'));
         addpath(fullfile(rootPth,'TriggerCtrlGUI','src'));
-        p.nspConfigPth = fullfile(fileparts(userpath),'NIRx','Configurations');
+        p.nspConfigPth = fullfile('C:\Users\nradu\Documents','NIRx','Configurations');% fullfile(fileparts(userpath),'NIRx','Configurations');
         p.optodeLayouts = fullfile(dsPth, 'optodeLayouts');
         
     case 'CHIMERA'
@@ -27,7 +27,8 @@ switch getenv('COMPUTERNAME')
 end
 
 
-p.outPath = fullfile(afsNSP2path,'StreamOutput','NIRS_PERFUSION','ENABLE');
+% p.outPath = fullfile(afsNSP2path,'StreamOutput','NIRS_PERFUSION','ENABLE');
+p.outPath = 'W:\Data\NIRSport2Data\NIRS_PERFUSION\ENABLE';
 p.outPath_fallback = fullfile(userpath,'ENABLE_data_fallbackPth',datestr(datetime,'yyyy-mm-dd'));
 % nspDataPth = 'C:\Users\nradu\Documents\NIRx\Data';
 p.nspDataPth = fullfile(fileparts(userpath),'NIRx','Data');
