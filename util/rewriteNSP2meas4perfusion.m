@@ -64,9 +64,9 @@ cfgIfo = dir(cfgFile);
 % assert(all(cellfun(@exist,wlFiles)),...
 %     'Raw data files (.wl1 .wl2) not found for baseName ''%s''!',inBaseName);
 
-nirsFile = fullfile(inPth,sprintf('%s.nirs',inBaseName));
+nirsFile = fullfile(inPth,sprintf('%s.nirs',regexprep(inNam,'\.nirs$','','once')));
 assert(exist(nirsFile,'file'),...
-    'Could not find .nirs file for baseName ''%s''!',inBaseName);
+    'Could not find .nirs file for inputName ''%s''!',inNam);
 
 rohfile = fullfile(inPth,sprintf('%s.roh',inBaseName));
 accfile = fullfile(inPth,sprintf('%s.acc',inBaseName));
@@ -76,12 +76,19 @@ accExist = exist(rohfile,'file');
 
 %% load & prep data
 
+% TODO: use a zip-reading toolbox from FEX instead of unpacking the whole
+% archive!
+% https://de.mathworks.com/matlabcentral/fileexchange/77257-zipfile
 if ~rohExist
     extrFiles = unzip(fullfile(inPth,sprintf('%s.zip',inBaseName)), ...
         inPth);
     if numel(extrFiles)>2
         warning('There were more than 2 files extracted from %s.zip',inBaseName);
     end
+    iroh = ~cellfun(@isempty,regexp(extrFiles,'.*\.roh$','once'));
+    rohfile = extrFiles{iroh};
+    iacc = ~cellfun(@isempty,regexp(extrFiles,'.*\.acc$','once'));
+    accfile = extrFiles{iacc};
 end
 fidRoh = fopen(rohfile,'r');
 rohLine = fgetl(fidRoh);
@@ -168,7 +175,7 @@ for ib = 1:numel(iBolInit)
     
     tBol = nd.t(iBolInit(ib));
     perfFileNam = sprintf('%s_%03d_perfusion.csv', ...
-        datestr(cfgIfo.datenum+tBol/86400,'yyyymmdd-HHMMSS'), nch);
+        datestr(t0+tBol/86400,'yyyymmdd-HHMMSS'), nch);
     perfFile = fullfile(outPath,perfFileNam);
     
     if ~overwrite && exist(perfFile,'file')

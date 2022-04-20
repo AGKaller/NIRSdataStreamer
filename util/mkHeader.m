@@ -19,6 +19,7 @@ switch type
             for srci = 1:numel(chnInfo)
         %         deti = strfind(chnMask{srci},'1');
                 deti = find(double(chnInfo{srci})~=48); % 10x faster
+                if isempty(deti), continue; end
                 srciHead = sprintf(frmt, [ones(1,numel(deti))*srci; ...
                                           deti]);
                 header = sprintf('%s%s',header,srciHead);

@@ -52,9 +52,9 @@ cfgIfo = dir(cfgFile);
 % assert(all(cellfun(@exist,wlFiles)),...
 %     'Raw data files (.wl1 .wl2) not found for baseName ''%s''!',inBaseName);
 
-nirsFile = fullfile(inPth,sprintf('%s.nirs',inBaseName));
+nirsFile = fullfile(inPth,sprintf('%s.nirs',regexprep(inNam,'\.nirs$','','once')));
 assert(exist(nirsFile,'file'),...
-    'Could not find .nirs file for baseName ''%s''!',inBaseName);
+    'Could not find .nirs file for inputName ''%s''!',inNam);
 
 rohfile = fullfile(inPth,sprintf('%s.roh',inBaseName));
 accfile = fullfile(inPth,sprintf('%s.acc',inBaseName));
@@ -187,7 +187,7 @@ for ib = 1:numel(iBolInit)
     
     tBol = trgT_orig(ib);%tNSP(iBolInit(ib));
     perfFileNam = sprintf('%s_%03d_oxygenation_perfusion.csv', ...
-        datestr(cfgIfo.datenum+tBol/86400,'yyyymmdd-HHMMSS'), nch);
+        datestr(t0+tBol/86400,'yyyymmdd-HHMMSS'), nch);
     perfFile = fullfile(outPath,perfFileNam);
     
     if ~overwrite && exist(perfFile,'file')
