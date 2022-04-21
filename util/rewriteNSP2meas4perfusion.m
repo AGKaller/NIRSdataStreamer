@@ -58,7 +58,7 @@ if isempty(inBaseName), inBaseName = inNam; end
 cfgFile = fullfile(inPth,sprintf('%s_config.json',inBaseName));
 assert(exist(cfgFile,'file'),...
     'Could not find config file for baseName ''%s''!',inBaseName);
-cfgIfo = dir(cfgFile);
+% cfgIfo = dir(cfgFile);
 
 % wlFiles = strcat(fullfile(inPth,inBaseName),{'.wl1','.wl2'});
 % assert(all(cellfun(@exist,wlFiles)),...
@@ -79,6 +79,9 @@ accExist = exist(rohfile,'file');
 % TODO: use a zip-reading toolbox from FEX instead of unpacking the whole
 % archive!
 % https://de.mathworks.com/matlabcentral/fileexchange/77257-zipfile
+% '-> doesnt work. use filelist = system('unzip -l file.zip') to get
+% content and 'unzip -o file.zip file.roh' to inflate and overwrite
+% roh-file, -n to skip existing (on windows!).
 if ~rohExist
     extrFiles = unzip(fullfile(inPth,sprintf('%s.zip',inBaseName)), ...
         inPth);

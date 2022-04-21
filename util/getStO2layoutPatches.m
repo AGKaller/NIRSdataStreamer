@@ -21,6 +21,10 @@ elseif startsWith(cfgname,{'Sheep2b'})
 
 else
     
+    % remove sufix
+    cfgname = regexprep(cfgname, '(_sine|_rect)?(_calib|_[\d\.]+prc)?$', ...
+        '', 'ignorecase');
+    
     aliases = {...
         % LayoutName    {mapped config filenames};
         'VOT2201_9x3'   {'VOT2201_9x3_sine' 'VOT2201_9x3_sine_.5prc'};

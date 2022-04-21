@@ -47,8 +47,8 @@ srcCfg = regexp(tag,sprintf('[^%s]*(?=\\.ncfg$)',fsepEscpd),'match','once');
 if ~isempty(srcCfg), ncfgName = srcCfg; end
 
 sys_cnfg.srate = floor(sys_cnfg.srate);
-chnMskNum = double(vertcat(sys_cnfg.chnMask{:}))~=48; % channel Mask as logicals
-srcNChn = sum(chnMskNum,2); % number of channels each source contributes to.
+chnMskBool = double(vertcat(sys_cnfg.chnMask{:}))~=48; % channel Mask as logicals
+srcNChn = sum(chnMskBool,2); % number of channels each source contributes to.
 % optode topo-layout & resulting patches:
 [Optodes, Types] = getStO2layoutPatches(ncfgName);
 
@@ -92,10 +92,10 @@ for i = 1:size(Optodes,1)
 %     wlbuf(i,:) = [8*(Optodes(i,1)-1)+Optodes(i,2), 8*(Optodes(i,1)-1)+Optodes(i,3), 8*(Optodes(i,4)-1)+Optodes(i,3), 8*(Optodes(i,4)-1)+Optodes(i,2)];
     src1 = Optodes(i,1); src2 = Optodes(i,4);
     det1 = Optodes(i,2); det2 = Optodes(i,3);
-    wlbuf = [sum(srcNChn(1:src1-1))+sum(chnMskNum(src1,1:det1)), ...
-             sum(srcNChn(1:src1-1))+sum(chnMskNum(src1,1:det2)), ...
-             sum(srcNChn(1:src2-1))+sum(chnMskNum(src2,1:det2)), ...
-             sum(srcNChn(1:src2-1))+sum(chnMskNum(src2,1:det1))];
+    wlbuf = [sum(srcNChn(1:src1-1))+sum(chnMskBool(src1,1:det1)), ...
+             sum(srcNChn(1:src1-1))+sum(chnMskBool(src1,1:det2)), ...
+             sum(srcNChn(1:src2-1))+sum(chnMskBool(src2,1:det2)), ...
+             sum(srcNChn(1:src2-1))+sum(chnMskBool(src2,1:det1))];
     
 %     for j = 1:size(pairs,1)
 %         wlbuf(j) = find(strcmp(chnHeadr, ...
