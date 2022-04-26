@@ -3,6 +3,7 @@ function rho = Sheep3A_17x7(patchNam)
 
 import StO2patchTypes.FNC.trapz_rho
 import StO2patchTypes.FNC.arbitr_rho
+import StO2patchTypes.FNC.sqr_rho
 
 ptchIds = strsplit(patchNam,'_');
 
@@ -35,10 +36,17 @@ switch ptype
             
         
     case {'sqr'}
-        % square, diagonal src rotation! ----------------------------------
-        angl = str2double(strsplit(config,','));
-        assert(all(isfinite(angl)),'Failed to get source rotation from patch ''%s''.',patchNam);
-        rho = arbitr_rho([0 18],[18 18],[18 0],angl(1),angl(2));
+        % square ----------------------------------------------------------
+        if strcmpi(config,'a')
+            % square antisymmetric 
+            rho = sqr_rho(18*sqrt(2),'antisym');
+        elseif startsWith(config,'o')
+            rho = sqr_rho(18*sqrt(2),'sym','ortho',config(2));
+        else
+            % square, diagonal src rotation! 
+            angl = str2double(strsplit(config,','));
+            assert(all(isfinite(angl)),'Failed to get source rotation from patch ''%s''.',patchNam);
+            rho = arbitr_rho([0 18],[18 18],[18 0],angl(1),angl(2));
 %         switch config
 %             case 'oup' % outward up down
 %                 rho = arbitr_rho([0 18],[18 18],[18 0],-135,45);
@@ -46,7 +54,7 @@ switch ptype
 %             otherwise
 %                 error('Square configuration code in patch ''%s'' not implemented.', patchNam);
 %         end
-        
+        end
         
     case {'rect'}
         % rectangular, diagonal src rotation! -----------------------------

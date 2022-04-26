@@ -25,10 +25,23 @@ res.St = [];
 %% loop for all defined patches
 for pp=1:sys_cnfg.NPatch
     
+    if size(sys_cnfg.patch(pp).rho,3)==1
+        sys_cnfg.patch(pp).rho = repmat(sys_cnfg.patch(pp).rho,1,1,2);
+    end
+    rhoLong = prod(sys_cnfg.patch(pp).rho(1,:,:),3);
+    rhoShrt = prod(sys_cnfg.patch(pp).rho(2,:,:),3);
+    rhoDivi =  sum(sys_cnfg.patch(pp).rho(2,:,:),3) ...
+             - sum(sys_cnfg.patch(pp).rho(1,:,:),3);
+    chIdx_L1 = sys_cnfg.patch(pp).chIdx(:,2);
+    chIdx_L2 = sys_cnfg.patch(pp).chIdx(:,4);
+    chIdx_S1 = sys_cnfg.patch(pp).chIdx(:,1);
+    chIdx_S2 = sys_cnfg.patch(pp).chIdx(:,3);
+    
     % the following line uses the full input stream, and select the appropriate channels using the sys_cnfg fields (channel indices)
-    SL = (0.5*log(inputDat(sys_cnfg.patch(pp).chIdx(:,2)).*inputDat(sys_cnfg.patch(pp).chIdx(:,4))./...
-        inputDat(sys_cnfg.patch(pp).chIdx(:,1))./inputDat(sys_cnfg.patch(pp).chIdx(:,3)))...
-        +2*log(sys_cnfg.patch(pp).rho(1,:)./sys_cnfg.patch(pp).rho(2,:)))./(sys_cnfg.patch(pp).rho(1,:)-sys_cnfg.patch(pp).rho(2,:)); % [760; 850]    
+    SL = ( log(inputDat(chIdx_L1).*inputDat(chIdx_L2) ./ ...
+               inputDat(chIdx_S1) ./ inputDat(chIdx_S2))...
+           + 2*log(rhoLong./rhoShrt)) ...
+         ./ rhoDivi; % [760; 850]    
     
     mua = SL.^2/3./cnsts(pp).musp; % [760 850]nm
     mua = mua - cnsts(pp).perc_water.*cnsts(pp).mua_water; % subtract water absorption, with 80% of head are water. unit: mm-1 @Kedenburg
