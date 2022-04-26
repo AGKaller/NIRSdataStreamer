@@ -96,6 +96,10 @@ if ~rohExist
     if numel(extrFiles)>2
         warning('There were more than 2 files extracted from %s.zip',inBaseName);
     end
+    iroh = ~cellfun(@isempty,regexp(extrFiles,'.*\.roh$','once'));
+    rohfile = extrFiles{iroh};
+    iacc = ~cellfun(@isempty,regexp(extrFiles,'.*\.acc$','once'));
+    accfile = extrFiles{iacc};
 end
 fidRoh = fopen(rohfile,'r');
 rohLine = fgetl(fidRoh);
