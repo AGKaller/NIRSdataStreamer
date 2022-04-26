@@ -22,7 +22,7 @@ elseif startsWith(cfgname,{'Sheep2b'})
 else
     
     % remove sufix
-    cfgname = regexprep(cfgname, '(_sine|_rect)?(_calib|_[\d\.]+prc)?$', ...
+    cfgname = regexprep(cfgname, '(_SCD)?(_sine|_rect)?(_calib|_[\d\.]+prc)?$', ...
         '', 'ignorecase');
     
     aliases = {...
@@ -55,16 +55,16 @@ else
         [Optodes, Types] = fh();
     catch ME
         if strcmpi(ME.identifier,'MATLAB:UndefinedFunction')
-            error('getStO2layoutPatches:unrecognizedLayout', ...
-                'No implementation of layout ''%s'' found.', ...
-                cfgname);
+            baseME = MException('getStO2layoutPatches:unrecognizedLayout', ...
+                        sprintf('Missing function for layout ''%s''.', ...
+                                cfgname));
         else
             baseME = MException('getStO2layoutPatches:layoutFncFailed', ...
                         sprintf('Implementation of layout ''%s'' caused an error.', ...
                                 cfgname));
-            baseME = baseME.addCause(ME);
-            throw(baseME);
         end
+        baseME = baseME.addCause(ME);
+        throw(baseME);
     end
 end
 

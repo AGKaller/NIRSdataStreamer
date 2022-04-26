@@ -2,6 +2,9 @@ function rewriteNSP2meas4oxygenation(infile,outPath, ...
     overwrite,bolusPreLength,bolusChunkSec,inclAcc,splitAfter)
 %
 
+w = what('+StO2layouts');
+assert(~isempty(w),'Layout package directory not found. Check if DataStreamer is on the path!');
+assert(exist('loadjson','file'),  'loadjson() not found. Check if jsonlab is on the path!');
 
 %% input handling 
 
@@ -63,6 +66,30 @@ accExist = exist(rohfile,'file');
 
 
 %% load & convert data
+
+% NIRS DATA ...............................................................
+stO2_cnfg = stO2_getCFG(cfgFile);
+nch = stO2_cnfg.NPatch;
+cnsts = repmat(constants_init('AdultHead'), nch, 1);
+
+nd = load(nirsFile,'-mat');
+[cerebOx,tNSP] = raw2StO2([nd.t nd.d], cnsts, stO2_cnfg.patch, ...
+                          stO2_winLen, stO2_winShft);
+ndp = numel(cerebOx);
+ndpRaw = numel(nd.t);
+
+stO2 = vertcat(cerebOx.St);
+
+hb = cat(3,cerebOx.c);
+hbO = permute(hb(1,:,:),[3 2 1]);
+hbR = permute(hb(2,:,:),[3 2 1]);
+
+mua = cat(3,cerebOx.mua);
+mua1 = permute(mua(1,:,:),[3 2 1]);
+mua2 = permute(mua(2,:,:),[3 2 1]);
+
+
+% DATE & TIME .............................................................
 if ~rohExist
     extrFiles = unzip(fullfile(inPth,sprintf('%s.zip',inBaseName)), ...
         inPth);
@@ -86,42 +113,26 @@ t0 = t0d + t0s/86400;
 secsOfDay = rem(t0,1)*86400;
 
 
-stO2_cnfg = stO2_getCFG(cfgFile);
-nch = stO2_cnfg.NPatch;
-cnsts = repmat(constants_init('AdultHead'), nch, 1);
-
-nd = load(nirsFile,'-mat');
-[cerebOx,tNSP] = raw2StO2([nd.t nd.d], cnsts, stO2_cnfg.patch, ...
-                          stO2_winLen, stO2_winShft);
-ndp = numel(cerebOx);
-ndpRaw = numel(nd.t);
-
-stO2 = vertcat(cerebOx.St);
-
-hb = cat(3,cerebOx.c);
-hbO = permute(hb(1,:,:),[3 2 1]);
-hbR = permute(hb(2,:,:),[3 2 1]);
-
-mua = cat(3,cerebOx.mua);
-mua1 = permute(mua(1,:,:),[3 2 1]);
-mua2 = permute(mua(2,:,:),[3 2 1]);
-
-
 % t0 = rem(cfgIfo.datenum,1)*24*60*60;
 tstmp = tNSP + secsOfDay;
 
 
+% TRIGGER .................................................................
 [trgT,trgN] = find(nd.s);
 dtTrg = bsxfun(@minus,tNSP,nd.t(trgT).');
 [~,itTrg] = min(abs(dtTrg));
 trg = zeros(ndp,1);
 trg(itTrg) = trgN;
 
+
+% ASSEMBLE ................................................................
 frames = 1 : stO2_winShft : ndpRaw-stO2_winLen+1;
 
 D = [tstmp, trg, frames.', stO2, hbO, hbR, mua1, mua2].';
 fmt = ['\r\n%.3f,%d,%d' repmat(',%.8f',1,nch*5)];
 
+
+% ACCELEROMETER & HEADER ..................................................
 if inclAcc
     acc_orig = permute(nd.aux,[1 3 2]);
     nAcc = size(acc_orig,3)/2;

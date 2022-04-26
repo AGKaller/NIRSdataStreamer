@@ -52,6 +52,13 @@ srcNChn = sum(chnMskBool,2); % number of channels each source contributes to.
 % optode topo-layout & resulting patches:
 [Optodes, Types] = getStO2layoutPatches(ncfgName);
 
+% check chnMask for active channels
+src = repmat(Optodes(:,[1 4]),1,2);
+det = repmat(Optodes(:,[2 3]),2,1);
+chnIdx = sub2ind(size(chnMskBool),src(:),det(:));
+assert(all(chnMskBool(chnIdx)), sprintf(['The channel mask is missing a source-detector-pair required by an StO2-Patch.\n' ...
+    'The config.json MUST match the input data, otherwise the channel indices are not computed correctly!']));
+
 % Optodes = [
 %     1 1 2 2;
 %     ];

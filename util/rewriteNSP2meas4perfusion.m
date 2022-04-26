@@ -1,6 +1,8 @@
 function rewriteNSP2meas4perfusion(infile,outPath, ...
     overwrite,bolusPreLength,bolusChunkSec,inclAcc,splitAfter)
 %
+assert(exist('+StO2layouts','dir'),'Layout package directory not found. Check if DataStreamer is on the path!');
+assert(exist('loadjson','file'),  'loadjson() not found. Check if jsonlab is on the path!');
 
 
 %% input handling 
@@ -76,6 +78,17 @@ accExist = exist(rohfile,'file');
 
 %% load & prep data
 
+% NIRS DATA ...............................................................
+[nch, chnMask] = getCfgParam(cfgFile,'nch','channel_mask');
+
+nd = load(nirsFile,'-mat');
+dA = -log(bsxfun(@rdivide, nd.d, mean(nd.d,1)));
+ndp = size(dA,1);
+oxy = dc_HbO(dA(:,1:nch), dA(:,nch+1:end));
+dxy = dc_Hb( dA(:,1:nch), dA(:,nch+1:end));
+
+
+% DATE & TIME .............................................................
 % TODO: use a zip-reading toolbox from FEX instead of unpacking the whole
 % archive!
 % https://de.mathworks.com/matlabcentral/fileexchange/77257-zipfile
@@ -108,25 +121,22 @@ t0s = str2double(regexp(t0Char,'(?<=:\d\d)\.\d+$','match','once'));
 t0 = t0d + t0s/86400;
 secsOfDay = rem(t0,1)*86400;
 
-[nch, chnMask] = getCfgParam(cfgFile,'nch','channel_mask');
-
-nd = load(nirsFile,'-mat');
-dA = -log(bsxfun(@rdivide, nd.d, mean(nd.d,1)));
-ndp = size(dA,1);
-oxy = dc_HbO(dA(:,1:nch), dA(:,nch+1:end));
-dxy = dc_Hb( dA(:,1:nch), dA(:,nch+1:end));
-
-
 % t0 = rem(cfgIfo.datenum,1)*24*60*60;
 tstmp = nd.t + secsOfDay;
 
+
+% TRIGGER .................................................................
 [trgT,trgN] = find(nd.s);
 trg = zeros(ndp,1);
 trg(trgT) = trgN;
 
+
+% ASSEMBLE ................................................................
 D = [tstmp, trg, (1:ndp).', nd.d, oxy, dxy].';
 fmt = ['\r\n%.3f,%d,%d' repmat(',%.8f',1,nch*4)];
 
+
+% ACCELEROMETER & HEADER ..................................................
 if inclAcc
     acc = permute(nd.aux,[1 3 2]);
     nAcc = size(acc,3)/2;
