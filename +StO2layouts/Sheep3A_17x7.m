@@ -1,7 +1,7 @@
 function [Optodes, Types] = Sheep3A_17x7
 % 3rd Sheep
 
-import StO2layouts.Sheep3A_17x7_neckFast
+import StO2layouts.Sheep3A_17x7.neckUS
 
 % TRAPEZOIDS (HEAD)
 patches = {
@@ -73,10 +73,10 @@ patches = {
 Optodes = cell2mat(patches(:,1:4));
 Types = strcat('Sheep3A_17x7.',patches(:,5));
 
-% % get double-sampled neck patches:
-% [oNeck, tNeck] = Sheep3A_17x7_neckFast;
-% Optodes = [Optodes; oNeck];
-% Types = [Types; tNeck];
+% get double-sampled neck patches:
+[oNeck, tNeck] = neckUS;
+Optodes = [Optodes; oNeck];
+Types = [Types; tNeck];
 
 end
 
