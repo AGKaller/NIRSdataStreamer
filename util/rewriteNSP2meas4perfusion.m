@@ -1,7 +1,9 @@
 function rewriteNSP2meas4perfusion(infile,outPath, ...
     overwrite,bolusPreLength,bolusChunkSec,inclAcc,splitAfter)
 %
-assert(exist('+StO2layouts','dir'),'Layout package directory not found. Check if DataStreamer is on the path!');
+
+% w = what('StO2layouts');
+% assert(~isempty(w),'Layout package directory not found. Check if DataStreamer is on the path!');
 assert(exist('loadjson','file'),  'loadjson() not found. Check if jsonlab is on the path!');
 
 
