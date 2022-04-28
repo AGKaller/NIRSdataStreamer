@@ -30,6 +30,7 @@ else
         'VOT2201_9x3'   {'VOT2201_9x3_sine' 'VOT2201_9x3_sine_.5prc'};
         'VOT220215'     {'VOT220215_sine'};
         'dummy'         {'dummy_sine' 'dummy_scd'};
+        'Sheep3A_17x7.neckUS_short'         {'Sheep3A_17x7_SCD_neckUS_withShort'};
         'OP220222_FETp1' {'HUMlateral_P1a_220222'};
         };
     assert(numel([aliases{:,2}])==numel(unique([aliases{:,2}])), ...

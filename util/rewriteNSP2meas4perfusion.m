@@ -1,5 +1,5 @@
 function rewriteNSP2meas4perfusion(infile,outPath, ...
-    overwrite,bolusPreLength,bolusChunkSec,inclAcc,splitAfter)
+    overwrite,bolusPreLength,bolusChunkSec,inclAcc,splitAfter, varargin)
 %
 
 % w = what('StO2layouts');
@@ -27,6 +27,25 @@ end
 if ~exist('splitAfter','var') || isempty(splitAfter)
     splitAfter = 0;
 end
+
+nvaraIn = numel(varargin);
+flag = 0;
+for v = 1:nvaraIn
+    if flag
+        flag = 0;
+        continue;
+    end
+    if ischar(varargin{v}) || isstring(varargin{v})
+        switch lower(varargin{v})
+            case '-zipfile'
+                assert(v<nvaraIn,'Please provide a value for parameter ''%s''',varargin{v})
+                zipfile = varargin{v+1};
+                flag = 1;
+            otherwise, error('Unrecognized input argument ''%s''',varargin{v});
+        end
+    end
+end
+    
 
 bolusInitTrg = 49;
 bolusPreTrgNum = 48;
@@ -98,7 +117,10 @@ dxy = dc_Hb( dA(:,1:nch), dA(:,nch+1:end));
 % content and 'unzip -o file.zip file.roh' to inflate and overwrite
 % roh-file, -n to skip existing (on windows!).
 if ~rohExist
-    extrFiles = unzip(fullfile(inPth,sprintf('%s.zip',inBaseName)), ...
+    if ~exist('zipfile','var')
+        zipfile = fullfile(inPth,sprintf('%s.zip',inBaseName));
+    end
+    extrFiles = unzip(zipfile, ...
         inPth);
     if numel(extrFiles)>2
         warning('There were more than 2 files extracted from %s.zip',inBaseName);
