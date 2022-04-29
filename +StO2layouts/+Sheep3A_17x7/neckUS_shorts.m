@@ -14,7 +14,7 @@ patches = {
     
     22 22 24 23 'neck_trap_a';
     20 19 22 22 'neck_trap_a';
-    19 29 21 21 'neck_trap_pisl'; % parallel, inward, sources on long side
+    19 20 21 21 'neck_trap_pisl'; % parallel, inward, sources on long side
     19 20 17 17 'neck_trap_oi';
     
     };

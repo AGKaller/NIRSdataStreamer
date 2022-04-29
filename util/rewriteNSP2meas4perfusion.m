@@ -5,6 +5,9 @@ function rewriteNSP2meas4perfusion(infile,outPath, ...
 % w = what('StO2layouts');
 % assert(~isempty(w),'Layout package directory not found. Check if DataStreamer is on the path!');
 assert(exist('loadjson','file'),  'loadjson() not found. Check if jsonlab is on the path!');
+assert(exist('zip_readlines','file'), ...
+    sprintf('zip_readlines() not found. Check if zipToolsPy is on the path!\nRepo: <a href="%1$s">%1$s</a>',...
+            'https://github.com/f-k-s/zipToolsPy'));
 
 
 %% input handling 
@@ -73,28 +76,15 @@ dc_Hb  = @(dA_760,dA_850)(a_HbO_760 * dA_850/dpf_850 - a_HbO_850 * dA_760/dpf_76
 
 %% get input files
 
-[inPth,inNam,~] = fileparts(infile);
+[inPth,inName,~] = fileparts(infile);
 
-inBaseName = regexp(inNam,'^\d{4}(-\d\d){2}_\d{3}','match','once');
-if isempty(inBaseName), inBaseName = inNam; end
-
-cfgFile = fullfile(inPth,sprintf('%s_config.json',inBaseName));
+cfgFile = fullfile(inPth,sprintf('%s_config.json',inName));
 assert(exist(cfgFile,'file'),...
-    'Could not find config file for baseName ''%s''!',inBaseName);
-% cfgIfo = dir(cfgFile);
+    'Could not find config file for baseName ''%s''!',inName);
 
-% wlFiles = strcat(fullfile(inPth,inBaseName),{'.wl1','.wl2'});
-% assert(all(cellfun(@exist,wlFiles)),...
-%     'Raw data files (.wl1 .wl2) not found for baseName ''%s''!',inBaseName);
-
-nirsFile = fullfile(inPth,sprintf('%s.nirs',regexprep(inNam,'\.nirs$','','once')));
+nirsFile = fullfile(inPth,sprintf('%s.nirs',inName));
 assert(exist(nirsFile,'file'),...
-    'Could not find .nirs file for inputName ''%s''!',inNam);
-
-rohfile = fullfile(inPth,sprintf('%s.roh',inBaseName));
-accfile = fullfile(inPth,sprintf('%s.acc',inBaseName));
-rohExist = exist(rohfile,'file');
-accExist = exist(rohfile,'file');
+    'Could not find .nirs file for inputName ''%s''!',inName);
 
 
 %% load & prep data
@@ -110,36 +100,17 @@ dxy = dc_Hb( dA(:,1:nch), dA(:,nch+1:end));
 
 
 % DATE & TIME .............................................................
-% TODO: use a zip-reading toolbox from FEX instead of unpacking the whole
-% archive!
-% https://de.mathworks.com/matlabcentral/fileexchange/77257-zipfile
-% '-> doesnt work. use filelist = system('unzip -l file.zip') to get
-% content and 'unzip -o file.zip file.roh' to inflate and overwrite
-% roh-file, -n to skip existing (on windows!).
-if ~rohExist
-    if ~exist('zipfile','var')
-        zipfile = fullfile(inPth,sprintf('%s.zip',inBaseName));
-    end
-    extrFiles = unzip(zipfile, ...
-        inPth);
-    if numel(extrFiles)>2
-        warning('There were more than 2 files extracted from %s.zip',inBaseName);
-    end
-    iroh = ~cellfun(@isempty,regexp(extrFiles,'.*\.roh$','once'));
-    rohfile = extrFiles{iroh};
-    iacc = ~cellfun(@isempty,regexp(extrFiles,'.*\.acc$','once'));
-    accfile = extrFiles{iacc};
+if ~exist('zipfile','var')
+    zipfile = fullfile(inPth,sprintf('%s.zip',inName));
 end
-fidRoh = fopen(rohfile,'r');
-rohLine = fgetl(fidRoh);
-fclose(fidRoh);
-if ~rohExist
-    try delete(rohfile); end
-end
-if ~accExist
-    try delete(accfile); end
-end
-t0Char = regexp(rohLine,'^[^;,]+','match','once');
+assert(exist(zipfile,'file'),...
+    'Could not find zip file (for ''%s''): ''%s''!',inName,zipfile);
+content = zip_getContent(zipfile);
+rohIdx = ~cellfun(@isempty,regexp({content.file_name},'\.roh$','once'));
+assert(sum(rohIdx)==1,'Failed to identify roh file in ''%s''.',zipfile);
+rohLine = zip_readlines(zipfile,content(rohIdx).file_name,1,0);
+
+t0Char = regexp(rohLine{1},'^[^;,]+','match','once');
 t0d = datenum(t0Char,'yyyy-mm-ddTHH:MM:SS');
 t0s = str2double(regexp(t0Char,'(?<=:\d\d)\.\d+$','match','once'));
 t0 = t0d + t0s/86400;
@@ -194,8 +165,8 @@ for k = 1:numel(chnkTStmp)-1
         datestr(fileTime,'yyyymmdd-HHMMSS'), nch);
     rawFile = fullfile(outPath,outRawNam);
     if ~overwrite && exist(rawFile,'file')
-        warning('Output file ''%s'' already exists, overwriting disabled.',...
-            rawFile);
+%         warning('Output file ''%s'' already exists, overwriting disabled.',...
+%             rawFile);
     else
         fidRaw = fopen(rawFile,'w');
         fprintf(fidRaw,header);
@@ -216,8 +187,8 @@ for ib = 1:numel(iBolInit)
     perfFile = fullfile(outPath,perfFileNam);
     
     if ~overwrite && exist(perfFile,'file')
-        warning('Output file ''%s'' already exists, overwriting disabled.',...
-            perfFile);
+%         warning('Output file ''%s'' already exists, overwriting disabled.',...
+%             perfFile);
         continue;
     end
     
