@@ -100,10 +100,10 @@ patches = {
     31 28 27 29 'neck_sqr_-135,45';
 
     % PARALLELOGRAMS (head)
-    % long                  S    |    S                |                D
-    %               D   D        |        D   D        |        S   S
-    %           S                |                S    |    D
-    %               UpSo         |        DownSo       |        UpSi
+    % long            S    |    S            |            D    |    D            
+    %           D   D      |      D   D      |      S   S      |      S   S      
+    %         S            |            S    |    D            |            D    
+    %       UpSourceOut    |     DownSo      |   UpSourceIn    |      DownSi
      2  4  6  7 'head_parallgrmL_UpSo_90,90';
      4  6  7  8 'head_parallgrmL_UpSo_-90,90';
      4  4  2  1 'head_parallgrmL_DownSo_90,90';
@@ -155,10 +155,10 @@ patches = {
      8  7 16 16 'head_parallgrmL_DownSi_0,0';
      
 
-    % short       S       |            D       |      D             |      S
-    %    D           D    |   S           S    |   S           S    |   D           D
-    %       S             |      D             |            D       |            S
-    %   Up SourceInside   |  Up SourceOutside  | Down SourceOutside | Down SourceInside
+    % short    S      |         D       |     D          |     S
+    %    D       D    |   S       S     |   S       S    |   D       D
+    %      S          |     D           |         D      |         S
+    % Up SourceInside | Up SourceOuts.  | Down SrceOuts. | Down SrceIns.
 
      % horizontal
      1  2  9 10 'head_parallgrmS_DownSi_180,0';

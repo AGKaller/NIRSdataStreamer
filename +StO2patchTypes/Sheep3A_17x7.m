@@ -46,7 +46,7 @@ switch ptype
         else
             % square, diagonal src rotation! 
             angl = str2double(strsplit(config,','));
-            assert(all(isfinite(angl)),'Failed to get source rotation from patch ''%s''.',patchNam);
+            assertAngl(angl,patchNam);
             rho = arbitr_rho([0 18],[18 18],[18 0],angl(1),angl(2));
 %         switch config
 %             case 'oup' % outward up down
@@ -58,17 +58,24 @@ switch ptype
         end
         
     case {'rect'}
-        % rectangular, diagonal src rotation! -----------------------------
+        % rectangular (srcs & dets on short side), diagonal src rotation! -
         angl = str2double(strsplit(config,','));
-        assert(all(isfinite(angl)),'Failed to get source rotation from patch ''%s''.',patchNam);
+        assertAngl(angl,patchNam);
         rho = arbitr_rho([0 36],[18 36],[18 0],angl(1),angl(2));
         
+        
+    case 'rectWide'
+        % rectangular - sources (and dets) on long side -------------------
+        angl = str2double(strsplit(config,','));
+        assertAngl(angl,patchNam);
+        rho = arbitr_rho([0 18],[36 18],[36 0],angl(1),angl(2));
+
         
     case 'lin'
         % linear, diagonal src rotation! ----------------------------------
         cfgCell = strsplit(config,',');
         angl = str2double(cfgCell(2:3));
-        assert(all(isfinite(angl)),'Failed to get source rotation from patch ''%s''.',patchNam);
+        assertAngl(angl,patchNam);
         switch cfgCell{1}
             case 'o', rho = arbitr_rho([0 -18], [0 -36], [0 -54], angl(1), angl(2));
             case 'i', rho = arbitr_rho([0  18], [0 -54], [0 -36], angl(1), angl(2));
@@ -76,8 +83,58 @@ switch ptype
         end
         
         
+    case 'parallgrmL'
+        % parallelogram ---------------------------------------------------
+        % long            S    |    S            |            D    |    D            
+        %           D   D      |      D   D      |      S   S      |      S   S      
+        %         S            |            S    |    D            |            D    
+        %           UpSo       |     DownSo      |      UpSi       |      DownSi
+        angl = str2num(ptchIds{4});
+        assertAngl(angl,patchNam);
+        
+        switch config
+            case 'UpSo',    pos = {sqrt(2).*[9  9], sqrt(2).*[3*9  9], sqrt(2).*[4*9  2*9]};
+            case 'DownSo',  pos = {sqrt(2).*[9 -9], sqrt(2).*[3*9 -9], sqrt(2).*[4*9 -2*9]};
+            case 'UpSi',    pos = {sqrt(2).*-[9 9], sqrt(2).*[3*9  9], sqrt(2).*[2*9 0]};
+            case 'DownSi',  pos = {sqrt(2).*[-9 9], sqrt(2).*[3*9 -9], sqrt(2).*[2*9 0]};
+            otherwise, error('Unexpected configuration code in patch ''%s''.', patchNam);
+        end
+        
+        rho = arbitr_rho(pos{:}, angl(1), angl(2));
+        
+        
+    case 'parallgrmS'
+        % parallelogram ---------------------------------------------------
+        % short    S      |         D       |     D          |     S
+        %    D       D    |   S       S     |   S       S    |   D       D
+        %      S          |     D           |         D      |         S
+        % Up SourceInside | Up SourceOuts.  | Down SrceOuts. | Down SrceIns.
+        angl = str2num(ptchIds{4});
+        assertAngl(angl,patchNam);
+        
+        switch config
+            case 'UpSi',    pos = {sqrt(2).*[-9 9], sqrt(2).*[3*9  9], sqrt(2).*[2*9 2*9]};
+            case 'UpSo',    pos = {sqrt(2).*[9 -9], sqrt(2).*[3*9  9], sqrt(2).*[4*9 0]};
+            case 'DownSo',  pos = {sqrt(2).*[9  9], sqrt(2).*[3*9 -9], sqrt(2).*[4*9 0]};
+            case 'DownSi',  pos = {sqrt(2).*-[9 9], sqrt(2).*[3*9 -9], sqrt(2).*[2*9 -2*9]};
+            otherwise, error('Unexpected configuration code in patch ''%s''.', patchNam);
+        end
+        
+        rho = arbitr_rho(pos{:}, angl(1), angl(2));
+    
+    
     otherwise, error('Unrecognized patch name'); % rho=[NaN NaN]; % 
 end
 
 
+end
+
+
+function assertAngl(angl,patchNam)
+try
+    assert(all(isfinite(angl)) && numel(angl)==2 && all(ismember(abs(angl),0:45:180)), ...
+        'Failed to get source rotation from patch ''%s''.', patchNam);
+catch ME
+    throwAsCaller(ME);
+end
 end
