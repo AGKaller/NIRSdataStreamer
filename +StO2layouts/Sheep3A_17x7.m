@@ -75,7 +75,7 @@ patches = {
      5  5 12 14  'head_rectWide_-135,45';
     14 13  6  5  'head_rectWide_-135,45';
      6  6 13  8  'head_rectWide_45,45';
-    15 14 11 12  'head_rectWide_-135,12';
+    15 14 11 12  'head_rectWide_-135,45';
      7 11 14 16  'head_rectWide_45,45';
     16 15  7  7  'head_rectWide_-135,-135';
      3  2  1  9  'head_rectWide_-45,135';
