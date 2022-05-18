@@ -17,6 +17,7 @@ switch ptype
         % trapezoid -------------------------------------------------------
         if strcmpi(config,'a') % antisymmetric . . . . . . . . . . . . . . 
             rho = trapz_rho(d0,2*d0,18,'anti');
+%             rho = arbitr_rho(sqrt(2)*[9 9], sqrt(2)*[3*9 9], [sqrt(2)*4*9 0], 90, 90);
             
         elseif startsWith(config,'o') % sym, othogonal . . . . . . . . . . 
             rho = trapz_rho(d0,2*d0,18,'sym','ortho',config(2));
@@ -75,7 +76,7 @@ switch ptype
         end
         
         
-    otherwise, error('Unrecognized patch name');
+    otherwise, error('Unrecognized patch name'); % rho=[NaN NaN]; % 
 end
 
 
