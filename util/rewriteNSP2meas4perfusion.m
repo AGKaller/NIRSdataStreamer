@@ -1,6 +1,37 @@
 function rewriteNSP2meas4perfusion(infile,outPath, ...
     overwrite,bolusPreLength,bolusChunkSec,inclAcc,splitAfter, varargin)
 %
+% INPUT
+%
+% infile            Input file name, file extension will be ignored.
+%
+%       --- optional: ---
+%
+% outPath           Path to save output to.
+%                   Defaults to pwd().
+%
+% overwrite         Overwrite existing files?
+%                   Defaults to false.
+%
+% bolusPreLength    Time in seconds to prepend to perfusion measurements.
+%                   If NaN, perfusion files will not be written.
+%                   Defaults to 30.
+%
+% bolusChunkSec     Length of measurement to include in perfusion files
+%                   starting from init-trigger (49) in seconds. If Nan,
+%                   perfusion file will not be written.
+%                   Defaults to 100.
+%
+% inclAcc           Include accelerometer data?
+%                   Defaults to false.
+%
+% splitAfter        Split raw data files after X seconds?
+%                   Defaults to 0 (do not split).
+%
+% '-zipfile' zipfile  Specify zip-file of raw data (.rho) from which
+%                   measurement time will be retrieved.
+%                   Defaults to the infile-name with .zip-extension.
+%
 
 % w = what('StO2layouts');
 % assert(~isempty(w),'Layout package directory not found. Check if DataStreamer is on the path!');
