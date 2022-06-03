@@ -4,6 +4,7 @@ function rho = Sheep3A_17x7(patchNam)
 import StO2patchTypes.FNC.trapz_rho
 import StO2patchTypes.FNC.arbitr_rho
 import StO2patchTypes.FNC.sqr_rho
+import StO2patchTypes.FNC.rect_rho
 
 ptchIds = strsplit(patchNam,'_');
 
@@ -34,17 +35,26 @@ switch ptype
         else
             error('Unexpected source orientation code in patch ''%s''.', patchNam);
         end
-            
         
+            
+    case {'trap1854'}
+        % trap with 18 and 54 mm ------------------------------------------
+        if strcmpi(config,'a')
+            rho = trapz_rho(18,54,d0,'antisym');
+        else
+            error('config not implemented for this patch type');
+        end
+        
+            
     case {'sqr'}
         % square ----------------------------------------------------------
-        if strcmpi(config,'a')
+        if strcmpi(config,'a') %                  !!!! sides 25 mm long !!!
             % square antisymmetric 
-            rho = sqr_rho(18*sqrt(2),'antisym');
-        elseif startsWith(config,'o')
-            rho = sqr_rho(18*sqrt(2),'sym','ortho',config(2));
+            rho = sqr_rho(d0,'antisym');
+        elseif startsWith(config,'o') %                sides 25 mm long
+            rho = sqr_rho(d0,'sym','ortho',config(2));
         else
-            % square, diagonal src rotation! 
+            % square, diagonal src rotation!      !!!! sides 18 mm long !!!
             angl = str2double(strsplit(config,','));
             assertAngl(angl,patchNam);
             rho = arbitr_rho([0 18],[18 18],[18 0],angl(1),angl(2));
@@ -58,11 +68,15 @@ switch ptype
         end
         
     case {'rect'}
-        % rectangular (srcs & dets on short side), diagonal src rotation! -
-        angl = str2double(strsplit(config,','));
-        assertAngl(angl,patchNam);
-        rho = arbitr_rho([0 36],[18 36],[18 0],angl(1),angl(2));
-        
+        % rectangular (srcs & dets on short side), diagonal src rotation! 
+        if strcmpi(config,'a')
+            % rect antisymmetric, 18x36 
+            rho = rect_rho(18,sqrt(5*18^2),'antisym');
+        else
+            angl = str2double(strsplit(config,','));
+            assertAngl(angl,patchNam);
+            rho = arbitr_rho([0 36],[18 36],[18 0],angl(1),angl(2));
+        end
         
     case 'rectWide'
         % rectangular - sources (and dets) on long side -------------------
@@ -89,6 +103,10 @@ switch ptype
         %           D   D      |      D   D      |      S   S      |      S   S      
         %         S            |            S    |    D            |            D    
         %           UpSo       |     DownSo      |      UpSi       |      DownSi
+        %
+        % Note: Source angles have to be EQUAL to result in equal distances
+        % for both wavelengths.
+        
         angl = str2num(ptchIds{4});
         assertAngl(angl,patchNam);
         
@@ -109,6 +127,10 @@ switch ptype
         %    D       D    |   S       S     |   S       S    |   D       D
         %      S          |     D           |         D      |         S
         % Up SourceInside | Up SourceOuts.  | Down SrceOuts. | Down SrceIns.
+        %
+        % Note: Source angles have to be EQUAL to result in equal distances
+        % for both wavelengths.
+
         angl = str2num(ptchIds{4});
         assertAngl(angl,patchNam);
         
