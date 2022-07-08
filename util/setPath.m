@@ -4,7 +4,7 @@ function p = setPath()
 afsNSP2path = '\\AFS\fbi.ukl.uni-freiburg.de\projects\CascadeNIRS\test\202101_NIRSport2_test\';
 
 switch getenv('COMPUTERNAME')
-    case 'DESKTOP-DFUE7OD' % ='NIRS'
+    case 'NRAD-NIRS' % ='NIRS'
         dsPth = fileparts(fileparts(mfilename('fullpath'))); % 'C:\Users\nradu\Documents\MATLAB';
         rootPth = fileparts(fileparts(fileparts(mfilename('fullpath')))); % 'C:\Users\nradu\Documents\MATLAB';
         addpath(genpath(fullfile(rootPth,'liblsl-Matlab')));
