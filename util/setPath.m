@@ -28,7 +28,7 @@ end
 
 
 % p.outPath = fullfile(afsNSP2path,'StreamOutput','NIRS_PERFUSION','ENABLE');
-p.outPath = 'W:\Data\NIRSport2Data\NIRS_PERFUSION\ENABLE';
+p.outPath = 'W:\Data\NIRSport2Data\NIRS_PERFUSION\YCOR';
 p.outPath_fallback = fullfile(userpath,'ENABLE_data_fallbackPth',datestr(datetime,'yyyy-mm-dd'));
 % nspDataPth = 'C:\Users\nradu\Documents\NIRx\Data';
 p.nspDataPth = fullfile(fileparts(userpath),'NIRx','Data');
