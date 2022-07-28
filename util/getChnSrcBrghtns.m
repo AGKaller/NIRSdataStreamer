@@ -1,4 +1,4 @@
-function [chnList, chnBrghtns] = getChnBrghtns(chnMask,brgth_plan,drv_plan)
+function [chnList, chnBrghtns] = getChnSrcBrghtns(chnMask,brgth_plan,drv_plan)
 %
 
 
