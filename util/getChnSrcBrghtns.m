@@ -7,7 +7,6 @@ function [chnList, chnBrghtns] = getChnSrcBrghtns(chnMask,brgth_plan,drv_plan)
 chnMask = vertcat(chnMask{:});
 chnMaskNum = reshape(sscanf(chnMask,'%1d'),size(chnMask));
 
-nSteps = max(chnMaskNum(:));
 [iSrc,iDet] = find(chnMaskNum);
 chnList = compose('S%02dD%02d',iSrc,iDet);
 
@@ -23,6 +22,7 @@ chnBrghtns = zeros(numel(chnList),2);
 
 if size(brgth_plan,1)==size(drv_plan,1)
     % brightness = amp_plan (RECT MODULATION)
+    % TODO: VECTORIZE ?!
     for ci = 1:numel(chnList)
         src = iSrc(ci); det = iDet(ci);
 
