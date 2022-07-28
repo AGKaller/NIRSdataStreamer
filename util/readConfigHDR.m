@@ -3,7 +3,8 @@ function cfgHDR = readConfigHDR(infile)
 [fid,errmsg] = fopen(infile);
 assert(fid>2,'Failed to open file ''%s'' because:\n%s',infile,errmsg);
 
-c = fread(fid,'uint8=>char',[1 inf]);
+c = fread(fid,[1 inf],'uint8=>char');
+fclose(fid);
 cs = regexp(c,'\r?\n','split');
 tok = regexp(cs,'(^[\w\s]+)=(.*$)','tokens');
 
