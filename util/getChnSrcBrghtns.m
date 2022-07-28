@@ -45,7 +45,16 @@ if size(brgth_plan,1)==size(drv_plan,1)
 
 elseif size(brgth_plan,2) == 8
     % brightness = drv_amplitudes (sine modulation)
-    error('using driver amplitudes not implemented yet!');
+    % TODO: VECTORIZE ?!
+    for ci = 1:numel(chnList)
+        src = iSrc(ci);
+
+        devIdx = ceil(src/16);
+        srcIdx = ceil((src-(devIdx-1)*16)/4);
+        amp_plnIdx = [-1 0]+2*srcIdx;
+
+        chnBrghtns(ci,:) = brgth_plan(devIdx,amp_plnIdx);
+    end
 else, error('2nd input, brght_plan, must be either an amp_plan (size(brgth_plan,1)==numel(drv_plan)) or drv_amplitudes of size Nx8, where N = number of NSP2');
 end
 
