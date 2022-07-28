@@ -20,7 +20,8 @@ D = [chnList num2cell(chnBrghtns)].';
 
 [fid,errmsg] = fopen(outFile,'w');
 assert(fid>2,'Failed to open file ''%s'' for writing because:\n%s',outFile,errmsg);
-fprintf(fid,'%s,%.9f,%.6f\n',D{:});
+fprintf(fid,'channel,wl1,wl2');
+fprintf(fid,'\n%s,%.9f,%.6f',D{:});
 fclose(fid);
 
 end
