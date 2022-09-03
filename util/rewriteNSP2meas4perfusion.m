@@ -120,8 +120,19 @@ nirsFile = fullfile(inPth,sprintf('%s.nirs',inName));
 assert(exist(nirsFile,'file'),...
     'Could not find .nirs file for inputName ''%s''!',inName);
 
+hdrFile = fullfile(inPth,sprintf('%_configs.hdr',inName));
+assert(exist(hdrFile,'file'),...
+    'Could not find config.hdr file for inputName ''%s''!',inName);
+
 
 %% load & prep data
+
+% SRC BRRIGHTNESS .........................................................
+cfgHDR = readConfigHDR(hdrFile);
+measDatetime = cfgHDR.Date;
+srcBrgtnsFileName = sprintf('%s_chnSrcLevels.csv', ...
+                            datestr(measDatetime,'yyyymmdd-HHMMSS'));
+
 
 % NIRS DATA ...............................................................
 [nch, chnMask] = getCfgParam(cfgFile,'nch','channel_mask');
@@ -177,9 +188,16 @@ else
 end
 
 
+
+
 %% write RAW output
 
 if ~exist(outPath,'dir'), mkdir(outPath); end
+
+% write src brightness
+srcBrgtnsFile = fullfile(outPath,srcBrgtnsFileName);
+writeChnSrcBrghtns(cfgFile,srcBrgtnsFile);
+
 
 if splitAfter>0
     chnkTStmp = tstmp(1):splitAfter:tstmp(end);
