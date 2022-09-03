@@ -83,6 +83,9 @@ end
 bolusInitTrg = 49;
 bolusPreTrgNum = 48;
 
+% bolusTrg = 50;
+bolusPostTrg = 51;
+
 stO2_winLen = 10;
 stO2_winShft = stO2_winLen;
 
@@ -252,7 +255,30 @@ for ib = 1:numel(iBolInit)
     
     [~,iEndBol] = min(abs(tNSP-(tBol+bolusChunkSec)));
     Db = D(:,iPreBol:iEndBol);
+
+    % remove any other Trigger from previous bolus
+    iBInitDb = iBolInit(ib)-iPreBol;
+    iTpre = 1:iBInitDb;
+    Db(2,iTpre) = 0;
+
+    % remove any other Trigger from following bolus
+    idxTrgRem = find(Db(2,iBInitDb:end)) + iBInitDb-1;
+    if Db(2,idxTrgRem(1))==bolusInitTrg
+        keep = 1;
+        if numel(idxTrgRem)>1 && Db(2,idxTrgRem(2)) == bolusTrg
+            keep = 2;
+            if numel(idxTrgRem)>2 && Db(2,idxTrgRem(3)) == bolusPostTrg
+                keep = 3;
+            end
+        end
+        idxTrgRem(1:keep) = [];
+    end
+    Db(2,idxTrgRem) = 0;
+    
+    % add the pre-bolus-Trigger
     Db(2,1) = bolusPreTrgNum;
+    
+    % write to file
     fidPerf = fopen(perfFile,'w');
     fprintf(fidPerf,header);
     fprintf(fidPerf,fmt,Db);

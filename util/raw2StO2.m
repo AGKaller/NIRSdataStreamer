@@ -42,13 +42,13 @@ iEnd = winLen:winShft:ndp;
 nWin = numel(iEnd);
 
 % prealloc
-res = StO2fh(sum(data(iStrt(1):iEnd(1),:)), cnsts, StO2CFG);
+res = StO2fh(sum(data(iStrt(1):iEnd(1),:),1), cnsts, StO2CFG);
 res = repmat(res,nWin,1);
 t = zeros(nWin,1);
 t(1) = mean(data(iStrt(1):iEnd(1),1));
 
 for k = 2:nWin
-    res(k) = StO2fh(sum(data(iStrt(k):iEnd(k),:)), cnsts, StO2CFG);
+    res(k) = StO2fh(sum(data(iStrt(k):iEnd(k),:),1), cnsts, StO2CFG);
     t(k) = mean(data(iStrt(k):iEnd(k),1));
 end
 
