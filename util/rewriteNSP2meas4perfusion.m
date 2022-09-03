@@ -120,7 +120,7 @@ nirsFile = fullfile(inPth,sprintf('%s.nirs',inName));
 assert(exist(nirsFile,'file'),...
     'Could not find .nirs file for inputName ''%s''!',inName);
 
-hdrFile = fullfile(inPth,sprintf('%_configs.hdr',inName));
+hdrFile = fullfile(inPth,sprintf('%s_config.hdr',inName));
 assert(exist(hdrFile,'file'),...
     'Could not find config.hdr file for inputName ''%s''!',inName);
 
