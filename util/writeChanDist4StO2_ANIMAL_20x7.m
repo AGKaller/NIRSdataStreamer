@@ -1,5 +1,5 @@
 clear
-addpath('C:\Users\nradu\Documents\MATLAB\DataStreamer');
+addpath(fileparts(fileparts(mfilename("fullpath"))));
 %%
 
 [o, t] = StO2layouts.ANIMAL_20x7_3stiff;
@@ -15,6 +15,7 @@ outname = 'patchDef_ANIMAL_20x7.csv';
 t = t(io);
 
 %%
+position = regexp(t,'(?<=\.)[^_]+','match','once');
 
 shape = regexp(t,'(?<=neck_|head_)[^_]+','match','once');
 assert(~any(cellfun(@isempty,shape)));
@@ -54,6 +55,9 @@ cable_orientation(k) = {'parallel'};
 k = endsWith(t,regexpPattern('\d+'));
 assert(~any(k & ismissing(cable_orientation)));
 cable_orientation(k) = {'diagonal'};
+
+
+%% TODO: get rho, replicate for wl1/2 & for chn1/2 if needed
 
 
 %%
