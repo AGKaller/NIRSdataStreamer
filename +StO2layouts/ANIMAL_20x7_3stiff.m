@@ -289,7 +289,7 @@ patches = {
     };
 
 Optodes = cell2mat(patches(:,1:4));
-Types = strcat('ANIMAL_20x7.',patches(:,5));
+Types = strcat('Sheep3A_17x7.',patches(:,5));
 
 end
 
