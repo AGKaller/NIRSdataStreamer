@@ -14,7 +14,8 @@ outname = 'patchDef_ANIMAL_20x7.csv';
 [o,io] = unique(o,'rows','stable');
 t = t(io);
 
-%%
+
+%% SHAPE AND POSITION
 position = regexp(t,'(?<=\.)[^_]+','match','once');
 
 shape = regexp(t,'(?<=neck_|head_)[^_]+','match','once');
@@ -23,7 +24,8 @@ shape = regexprep(shape, ...
     {'rect',        'trap',         'sqr',      'lin',   'rectWide',     'parallgrmL',        'parallgrmS'}, ...
     {'rectangular', 'trapezoid',    'square',   'linear' 'rectangular45','parallelogram_long','parallelogram_short'});
 
-%%
+
+%% CABLE CONFIGURATION 
 
 cable_config = cell(size(shape));
 k = endsWith(t,'a');
@@ -42,19 +44,21 @@ cable_config(k) = {'antisymmetric'};
 
 
 
-%%
+%% CABLE ORIENTATION
 
-cable_orientation = repmat({missing},(size(shape)));
-k = endsWith(t,regexpPattern('_o[a-z]+'));
-cable_orientation(k) = {'orthogonal'};
-
-k = endsWith(t,regexpPattern('_p[a-z]+'));
-assert(~any(k & ismissing(cable_orientation)));
-cable_orientation(k) = {'parallel'};
-
-k = endsWith(t,regexpPattern('\d+'));
-assert(~any(k & ismissing(cable_orientation)));
-cable_orientation(k) = {'diagonal'};
+% ismissCell = @(x)cellfun(@(x)any(ismissing(x)),x);
+% 
+% cable_orientation = repmat({missing},(size(shape)));
+% k = endsWith(t,regexpPattern('_o[a-z]+'));
+% cable_orientation(k) = {'orthogonal'};
+% 
+% k = endsWith(t,regexpPattern('_p[a-z]+'));
+% assert(~any(k & ismissCell(cable_orientation)));
+% cable_orientation(k) = {'parallel'};
+% 
+% k = endsWith(t,regexpPattern('\d+'));
+% assert(~any(k & ismissCell(cable_orientation)));
+% cable_orientation(k) = {'diagonal'};
 
 
 %% TODO: get rho, replicate for wl1/2 & for chn1/2 if needed
