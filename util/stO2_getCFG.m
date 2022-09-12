@@ -47,10 +47,15 @@ srcCfg = regexp(tag,sprintf('[^%s]*(?=\\.ncfg$)',fsepEscpd),'match','once');
 if ~isempty(srcCfg), ncfgName = srcCfg; end
 
 sys_cnfg.srate = floor(sys_cnfg.srate);
-chnMskBool = double(vertcat(sys_cnfg.chnMask{:}))~=48; % channel Mask as logicals
-srcNChn = sum(chnMskBool,2); % number of channels each source contributes to.
 % optode topo-layout & resulting patches:
 [Optodes, Types] = getStO2layoutPatches(ncfgName);
+
+
+% TODO: use function optNum2ChnIdx_chMsk for vectorized calculation of channel indices!
+
+
+chnMskBool = double(vertcat(sys_cnfg.chnMask{:}))~=48; % channel Mask as logicals
+srcNChn = sum(chnMskBool,2); % number of channels each source contributes to.
 
 % check chnMask for active channels
 src = repmat(Optodes(:,[1 4]),1,2);
@@ -95,6 +100,7 @@ assert(all(chnMskBool(chnIdx)), sprintf(['The channel mask is missing a source-d
 
 %% Definition of Patches HERE
 % pairs = [1 2; 1 3; 4 3; 4 2];
+
 for i = 1:size(Optodes,1)
 %     wlbuf(i,:) = [8*(Optodes(i,1)-1)+Optodes(i,2), 8*(Optodes(i,1)-1)+Optodes(i,3), 8*(Optodes(i,4)-1)+Optodes(i,3), 8*(Optodes(i,4)-1)+Optodes(i,2)];
     src1 = Optodes(i,1); src2 = Optodes(i,4);
