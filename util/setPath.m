@@ -1,5 +1,9 @@
-function p = setPath()
+function p = setPath(project)
 %
+
+if nargin<1
+    project = 'ENABLE';
+end
 
 afsNSP2path = '\\AFS\fbi.ukl.uni-freiburg.de\projects\CascadeNIRS\test\202101_NIRSport2_test\';
 
@@ -28,8 +32,8 @@ end
 
 
 % p.outPath = fullfile(afsNSP2path,'StreamOutput','NIRS_PERFUSION','ENABLE');
-p.outPath = 'W:\Data\NIRSport2Data\NIRS_PERFUSION\YCOR';
-p.outPath_fallback = fullfile(userpath,'ENABLE_data_fallbackPth',datestr(datetime,'yyyy-mm-dd'));
+p.outPath = fullfile('W:\Data\NIRSport2Data\NIRS_PERFUSION\',project);
+p.outPath_fallback = fullfile(userpath,'ENABLE_data_fallbackPth',project,datestr(datetime,'yyyy-mm-dd'));
 % nspDataPth = 'C:\Users\nradu\Documents\NIRx\Data';
 p.nspDataPth = fullfile(fileparts(userpath),'NIRx','Data');
 
