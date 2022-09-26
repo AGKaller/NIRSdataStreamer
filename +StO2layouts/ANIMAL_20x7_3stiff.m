@@ -131,8 +131,8 @@ patches = {
     32 28 27 31 'neck_sqr_45,135';
 
     % neck trapezoids
-    22 18 20 24 'neck_trap1854_a';
-    21 19 21 23 'neck_trap1854_a';
+    22 18 20 24 'neck_trap5418_a';
+    21 19 21 23 'neck_trap5418_a';
 
     % neck linear
     22 19 21 24 'neck_lin_o,45,-45'; % src outside
