@@ -71,7 +71,7 @@ switch ptype
         % rectangular (srcs & dets on short side), diagonal src rotation! 
         if strcmpi(config,'a')
             % rect antisymmetric, 18x36 
-            rho = rect_rho(18,sqrt(5*18^2),'antisym');
+            rho = rect_rho(18,36,'antisym');
         else
             angl = str2double(strsplit(config,','));
             assertAngl(angl,patchNam);
