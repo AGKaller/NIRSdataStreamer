@@ -1,5 +1,21 @@
-% rewrite PERFUSION measurement chunks & bolus snippets
 % wrapper with UI for rewriteNSP2meas4perfusion.m
+% rewrite PERFUSION measurement chunks & bolus snippets
+
+% Init, make sure required functions are on the path
+clear
+addpath(fullfile(fileparts(mfilename("fullpath")),'util'));
+if ~exist('loadjson','file')
+    p = uigetdir(userpath,'Select path to jsonlab-2.0');
+    if ~p, error('jsonlab toolbox is required!'); end
+    addpath(p);
+end
+if ~exist('zip_readlines','file')
+    p = uigetdir(userpath,'Select path to zipToolsPy');
+    if ~p, error('zipToolsPy toolbox is required!'); end
+    addpath(p);
+end
+
+
 
 measPath = fullfile(fileparts(userpath),'NIRx','Data');
 measDateDir = uigetdir(measPath,'Select date-directory of measurements');
@@ -10,6 +26,14 @@ measDirs = dir(measDateDir);
 k = [measDirs.isdir] & ~startsWith({measDirs.name},'.');
 measDirs = measDirs(k);
 
+% assert that directory has subdirs
+if isempty(measDirs)
+    msg = sprintf('No folders found in ''%s''!\nSelect the date-directory (YYYY-MM-DD) containing the measurement folders (YYYY-MM-DD_xxx).',...
+        measDateDir);
+    errordlg(msg, ...
+        'Empty directory selected','modal');
+    error(msg);
+end
 
 sel = listdlg("ListString",{measDirs.name},"SelectionMode","multiple","PromptString",'Select measurements');
 if isempty(sel), return; end
