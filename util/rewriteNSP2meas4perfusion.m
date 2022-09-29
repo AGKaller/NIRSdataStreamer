@@ -127,12 +127,6 @@ assert(exist(hdrFile,'file'),...
 
 %% load & prep data
 
-% SRC BRRIGHTNESS .........................................................
-cfgHDR = readConfigHDR(hdrFile);
-measDatetime = cfgHDR.Date;
-srcBrgtnsFileName = sprintf('%s_chnSrcLevels.csv', ...
-                            datestr(measDatetime,'yyyymmdd-HHMMSS'));
-
 
 % NIRS DATA ...............................................................
 [nch, chnMask] = getCfgParam(cfgFile,'nch','channel_mask');
@@ -163,6 +157,14 @@ secsOfDay = rem(t0,1)*86400;
 
 % t0 = rem(cfgIfo.datenum,1)*24*60*60;
 tstmp = nd.t + secsOfDay;
+
+
+% SRC BRRIGHTNESS .........................................................
+% cfgHDR = readConfigHDR(hdrFile);
+% measDatetime = cfgHDR.Date; % CAVE: this does not correspond to the measurement date, but to the time the file was converted/written
+srcBrgtnsFileName = sprintf('%s_chnSrcLevels.csv', ...
+                            datestr(t0d,'yyyymmdd-HHMMSS'));
+
 
 
 % TRIGGER .................................................................
