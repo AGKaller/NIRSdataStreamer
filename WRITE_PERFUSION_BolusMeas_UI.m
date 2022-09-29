@@ -1,5 +1,8 @@
 % rewrite PERFUSION measurement chunks & bolus snippets
 % wrapper with UI for rewriteNSP2meas4perfusion.m
+addpath(fullfile(fileparts(mfilename('fullpath')),'util'));
+addpath(fullfile(userpath,'zipToolsPy'));
+addpath(fullfile(userpath,'jsonlab-2.0'));
 
 measPath = fullfile(fileparts(userpath),'NIRx','Data');
 measDateDir = uigetdir(measPath,'Select date-directory of measurements');
