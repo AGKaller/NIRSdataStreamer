@@ -45,6 +45,14 @@ switch ptype
             error('config not implemented for this patch type');
         end
         
+    case {'trap5418'}
+        % trap with 18 and 54 mm ------------------------------------------
+        if strcmpi(config,'a')
+            rho = arbitr_rho([18 18],[2*18 18],[3*18 0],45,135);
+        else
+            error('config not implemented for this patch type');
+        end
+        
             
     case {'sqr'}
         % square ----------------------------------------------------------
@@ -71,7 +79,8 @@ switch ptype
         % rectangular (srcs & dets on short side), diagonal src rotation! 
         if strcmpi(config,'a')
             % rect antisymmetric, 18x36 
-            rho = rect_rho(18,sqrt(5*18^2),'antisym');
+%             rho = rect_rho(18,36,'antisym'); % equivalent?!:
+            rho = arbitr_rho([0 36],[18 36],[18 0],45,135);
         else
             angl = str2double(strsplit(config,','));
             assertAngl(angl,patchNam);
