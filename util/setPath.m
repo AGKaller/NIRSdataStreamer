@@ -10,7 +10,7 @@ afsNSP2path = '\\AFS\fbi.ukl.uni-freiburg.de\projects\CascadeNIRS\test\202101_NI
 p.outPath = fullfile('W:\Data\NIRSport2Data\NIRS_PERFUSION\',project);
 
 switch getenv('COMPUTERNAME')
-    case 'NRAD-NIRS' % ='NIRS'
+    case {'NRAD-NIRS','NRAD-NIRS-W11'} % ='NIRS'
         dsPth = fileparts(fileparts(mfilename('fullpath'))); % 'C:\Users\nradu\Documents\MATLAB';
         rootPth = fileparts(fileparts(fileparts(mfilename('fullpath')))); % 'C:\Users\nradu\Documents\MATLAB';
         addpath(genpath(fullfile(rootPth,'liblsl-Matlab')));
