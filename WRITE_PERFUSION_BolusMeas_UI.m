@@ -47,6 +47,7 @@ param = inputdlg({'Overwrite existing files? [0|1]',...
                  repmat([1 60],5,1), ... input edit fields size
                  {'1','290','310','1','300'}); % defaults
 param = str2double(param);
+if isempty(param), disp(' ====== Cancelled ======'); return; end
 if any(isnan(param)), error('Failed to convert parameter to numeric!'); end
 param = num2cell(param);
 
