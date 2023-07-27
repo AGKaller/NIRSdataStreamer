@@ -87,6 +87,7 @@ bolusPreTrgNum = 48;
 bolusTrg = 50;
 bolusPostTrg = 51;
 
+bolusTrgNums = [bolusPreTrgNum bolusInitTrg bolusTrg bolusPostTrg];
 
 %% lambert-beer stuff
 
@@ -259,10 +260,11 @@ for ib = 1:numel(iBolInit)
     % remove any other Trigger from previous bolus
     iBInitDb = iBolInit(ib)-iPreBol;
     iTpre = 1:iBInitDb;
-    Db(2,iTpre) = 0;
+    k = ismember(Db(2,iTpre),bolusTrgNums);
+    Db(2,iTpre(k)) = 0;
 
     % remove any other Trigger from following bolus
-    idxTrgRem = find(Db(2,iBInitDb:end)) + iBInitDb-1;
+    idxTrgRem = find(ismember(Db(2,iBInitDb:end),bolusTrgNums)) + iBInitDb-1;
     if Db(2,idxTrgRem(1))==bolusInitTrg
         keep = 1;
         if numel(idxTrgRem)>1 && Db(2,idxTrgRem(2)) == bolusTrg
