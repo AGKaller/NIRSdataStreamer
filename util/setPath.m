@@ -19,13 +19,14 @@ switch getenv('COMPUTERNAME')
         p.nspConfigPth = fullfile('C:\Users\nradu\Documents','NIRx','Configurations');% fullfile(fileparts(userpath),'NIRx','Configurations');
         p.optodeLayouts = fullfile(dsPth, 'optodeLayouts');
         
-    case 'NRAD-NIRS-W11' % ='NIRS'
-        dsPth = fileparts(fileparts(mfilename('fullpath'))); % 'C:\Users\nradu\Documents\MATLAB';
-        rootPth = fileparts(fileparts(fileparts(mfilename('fullpath')))); % 'C:\Users\nradu\Documents\MATLAB';
+    case {'NRAD-NIRS-W11','NRADC033'} % ='NIRS'
+        dsPth = fileparts(fileparts(mfilename('fullpath'))); % app path
+        rootPth = fileparts(fileparts(fileparts(mfilename('fullpath')))); % matlab path 'C:\Users\<user>\Documents\MATLAB';
         addpath(genpath(fullfile(rootPth,'liblsl-Matlab')));
         addpath(fullfile(rootPth,'jsonlab-2.0'));
-        addpath(fullfile(rootPth,'TriggerCtrlGUI','src'));
-        p.nspConfigPth = fullfile('C:\Users\NIRS_\Documents','NIRx','Configurations');% fullfile(fileparts(userpath),'NIRx','Configurations');
+        % addpath(fullfile(rootPth,'TriggerCtrlGUI','src'));
+        % deprecated?!:
+        % p.nspConfigPth = fullfile('C:\Users\NIRS_\Documents','NIRx','Configurations');% fullfile(fileparts(userpath),'NIRx','Configurations');
         p.optodeLayouts = fullfile(dsPth, 'optodeLayouts');
         
     case 'CHIMERA'
