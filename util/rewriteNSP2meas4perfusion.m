@@ -234,6 +234,9 @@ end
 %% write PERFUSION output
 
 iBolInit = find(trg==bolusInitTrg);
+if isequal([bolusPreLength bolusChunkSec],[0 0])
+    iBolInit = [];
+end
 
 for ib = 1:numel(iBolInit)
     
