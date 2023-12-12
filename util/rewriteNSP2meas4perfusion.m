@@ -184,6 +184,10 @@ fmt = ['\r\n%.3f,%d,%d' repmat(',%.8f',1,nch*4)];
 if inclAcc
     acc = permute(nd.aux,[1 3 2]);
     nAcc = size(acc,3)/2;
+    assert(nAcc==round(nAcc) && numel(acc)==ndp*nAcc*6, ...
+        'NSPstreamer:rewriteNSP2meas4perf:accArraySizeMismatch', ...
+        'Size of accelerometer data array does not match in %s!', ...
+        infile)
     D = [D; reshape(acc,ndp,nAcc*6).']; % x,y,z X acc,gyr
     header = mkHeader(chnMask,'rawHb',nAcc);
     fmt = [fmt repmat(',%.3f',1,nAcc*6)];
