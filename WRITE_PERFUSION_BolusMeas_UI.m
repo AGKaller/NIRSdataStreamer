@@ -16,7 +16,7 @@ end
 if isfield(CFG,'jsonlabPath')
     addpath(CFG.jsonlabPath);
 end
-p = which('loadjson.m');
+p = fileparts(which('loadjson.m'));
 if isempty(p)
     p = uigetdir(userpath,'Select path to jsonlab-2.0');
     if ~p, error('jsonlab toolbox is required!'); end
@@ -30,7 +30,7 @@ CFG.jsonlabPath = p;
 if isfield(CFG,'zipToolsPath')
     addpath(CFG.zipToolsPath);
 end
-p = which('zip_readlines.m');
+p = fileparts(which('zip_readlines.m'));
 if isempty(p)
     p = uigetdir(userpath,'Select path to zipToolsPy');
     if ~p, error('zipToolsPy toolbox is required!'); end
