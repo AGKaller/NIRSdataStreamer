@@ -32,6 +32,10 @@ function rewriteNSP2meas4perfusion(infile,outPath, ...
 %                   measurement time will be retrieved.
 %                   Defaults to the infile-name with .zip-extension.
 %
+% '-cfgFile' cfgFile  Specify json config file of measurement, used to get
+%                   channel names and source brightness.
+%                   Defaults to the infile-name with _config.json-extension.
+%
 
 % w = what('StO2layouts');
 % assert(~isempty(w),'Layout package directory not found. Check if DataStreamer is on the path!');
@@ -75,6 +79,10 @@ for v = 1:nvaraIn
                 assert(v<nvaraIn,'Please provide a value for parameter ''%s''',varargin{v})
                 zipfile = varargin{v+1};
                 flag = 1;
+            case '-cfgfile'
+                assert(v<nvaraIn,'Please provide a value for parameter ''%s''',varargin{v})
+                cfgFile = varargin{v+1};
+                flag = 1;
             otherwise, error('Unrecognized input argument ''%s''',varargin{v});
         end
     end
@@ -113,9 +121,11 @@ dc_Hb  = @(dA_760,dA_850)(a_HbO_760 * dA_850/dpf_850 - a_HbO_850 * dA_760/dpf_76
 
 [inPth,inName,~] = fileparts(infile);
 
-cfgFile = fullfile(inPth,sprintf('%s_config.json',inName));
+if ~exist('cfgFile', 'var')
+    cfgFile = fullfile(inPth,sprintf('%s_config.json',inName));
+end
 assert(exist(cfgFile,'file'),...
-    'Could not find config file for baseName ''%s''!',inName);
+    'Could not find config file ''%s''!',cfgFile);
 
 nirsFile = fullfile(inPth,sprintf('%s.nirs',inName));
 assert(exist(nirsFile,'file'),...
