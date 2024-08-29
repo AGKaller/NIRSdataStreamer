@@ -37,7 +37,9 @@ switch getenv('COMPUTERNAME')
         addpath(fullfile(rootPth,'TriggerCtrlGUI','src'));
         p.nspConfigPth = fullfile(afsNSP2path,'Configurations');
         p.optodeLayouts = fullfile(dsPth, 'optodeLayouts');
-        p.outPath = fullfile('W:\home\nirs\Data\NIRSport2Data\NIRS_PERFUSION\',project);
+        if strcmpi(getenv('USERNAME'),'konrad')
+            p.outPath = fullfile('W:\home\nirs\Data\NIRSport2Data\NIRS_PERFUSION\',project);
+        end
 
         
     otherwise, error('Unknown COMPUTERNAME, can''t set paths.');
