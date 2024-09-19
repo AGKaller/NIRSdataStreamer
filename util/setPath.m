@@ -19,7 +19,7 @@ switch getenv('COMPUTERNAME')
         p.nspConfigPth = fullfile('C:\Users\nradu\Documents','NIRx','Configurations');% fullfile(fileparts(userpath),'NIRx','Configurations');
         p.optodeLayouts = fullfile(dsPth, 'optodeLayouts');
         
-    case {'NRAD-NIRS-W11','NRADC033'} % ='NIRS'
+    case {'NRAD-NIRS-W11','NRADC033','FRONIN001'} % ='NIRS'
         dsPth = fileparts(fileparts(mfilename('fullpath'))); % app path
         rootPth = fileparts(fileparts(fileparts(mfilename('fullpath')))); % matlab path 'C:\Users\<user>\Documents\MATLAB';
         addpath(genpath(fullfile(rootPth,'liblsl-Matlab')));
