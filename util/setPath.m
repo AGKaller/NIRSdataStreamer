@@ -9,7 +9,8 @@ afsNSP2path = '\\AFS\fbi.ukl.uni-freiburg.de\projects\CascadeNIRS\test\202101_NI
 
 p.outPath = fullfile('W:\Data\NIRSport2Data\NIRS_PERFUSION\',project);
 
-switch getenv('COMPUTERNAME')
+pcName = getenv('COMPUTERNAME');
+switch pcName
     case 'NRAD-NIRS' % ='NIRS'
         dsPth = fileparts(fileparts(mfilename('fullpath'))); % 'C:\Users\nradu\Documents\MATLAB';
         rootPth = fileparts(fileparts(fileparts(mfilename('fullpath')))); % 'C:\Users\nradu\Documents\MATLAB';
@@ -28,6 +29,8 @@ switch getenv('COMPUTERNAME')
         % deprecated?!:
         % p.nspConfigPth = fullfile('C:\Users\NIRS_\Documents','NIRx','Configurations');% fullfile(fileparts(userpath),'NIRx','Configurations');
         p.optodeLayouts = fullfile(dsPth, 'optodeLayouts');
+        
+        if strcmp(pcName,'NRADC033'), p.outPath = fullfile('P:\',project); end
         
     case 'CHIMERA'
         dsPth = fileparts(fileparts(mfilename('fullpath'))); % 'C:\Users\nradu\Documents\MATLAB';
