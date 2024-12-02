@@ -12,7 +12,8 @@ rootPth = fileparts(fileparts(fileparts(mfilename('fullpath'))));
 appPth = fileparts(fileparts(mfilename('fullpath')));
 p.optodeLayouts = fullfile(appPth, 'optodeLayouts');
 
-switch getenv('COMPUTERNAME')
+pcName = getenv('COMPUTERNAME');
+switch pcName
     case 'NRAD-NIRS' % ='NIRS'
          % 'C:\Users\nradu\Documents\MATLAB';
          % 'C:\Users\nradu\Documents\MATLAB';
@@ -28,6 +29,8 @@ switch getenv('COMPUTERNAME')
         % addpath(fullfile(rootPth,'TriggerCtrlGUI','src'));
         % deprecated?!:
         % p.nspConfigPth = fullfile('C:\Users\NIRS_\Documents','NIRx','Configurations');% fullfile(fileparts(userpath),'NIRx','Configurations');
+        
+        if strcmp(pcName,'NRADC033'), p.outPath = fullfile('P:\',project); end
         
     case 'CHIMERA'
         addpath(genpath(fullfile(rootPth,'liblsl-Matlab')));
