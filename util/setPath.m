@@ -30,7 +30,7 @@ switch pcName
         % deprecated?!:
         % p.nspConfigPth = fullfile('C:\Users\NIRS_\Documents','NIRx','Configurations');% fullfile(fileparts(userpath),'NIRx','Configurations');
         
-        if ~strcmp(pcName,'NRAD-NIRS-W11'), p.outPath = fullfile('P:\',project); end
+        p.outPath = fullfile('P:\',project);
         
     case 'CHIMERA'
         addpath(genpath(fullfile(rootPth,'liblsl-Matlab')));
